@@ -1,5 +1,7 @@
+import * as moment from 'moment';
+
 import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
 
 import { ConfirmRegistrationDto } from '../dto/auth-confirm-registration.dto';
@@ -7,10 +9,11 @@ import { ForgotPasswordDto } from '../dto/auth-forgot-password.dto';
 import { RegisterUserDto } from '../dto/auth-register.dto';
 import { ResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { UserService } from '../services/user.service';
+import { UsersService } from '../services/users.service';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService, private readonly usersService: UsersService) {}
 
   @Post('register')
   async register(@Body() payload: RegisterUserDto) {
@@ -38,16 +41,14 @@ export class AuthController {
     return req.user;
   }
 
-  @EventPattern('user.login')
-  handleUserLoginEvent(@Payload() payload) {
-    console.log(payload);
-    // const decoded = this.jwtService.decode(token) as DecodedToken;
-    // await this.messagingService
-    //   .sendAsync('user.update', {
-    //     id,
-    //     lastLogin: moment(),
-    //     tokenExpiration: moment.unix(decoded.exp)
-    //   })
-    //   .then(() => this.messagingService.emitAsync('authentication.login', { id }));
+  @MessagePattern('user.login')
+  async handleUserLoginEvent(@Payload() payload) {
+    const { id, decodedToken } = payload;
+    const data = {
+      lastLogin: moment(),
+      tokenExpiration: moment.unix(decodedToken.exp)
+    };
+
+    return await this.usersService.update(id, data);
   }
 }

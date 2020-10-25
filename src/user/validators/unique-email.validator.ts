@@ -26,7 +26,7 @@ export class EmailUsedValidator implements ValidatorConstraintInterface {
 }
 
 export function IsEmailUsed(isUsedCheck: boolean, validationOptions?: ValidationOptions) {
-  return function(object: Object, propertyName: string) {
+  return function (object: Object, propertyName: string) {
     registerDecorator({
       name: 'IsEmailUsed',
       target: object.constructor,

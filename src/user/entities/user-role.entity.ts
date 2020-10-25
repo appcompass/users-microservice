@@ -14,25 +14,17 @@ export class UserRole {
   @PrimaryColumn()
   public roleId: number;
 
-  @Transform(created => created?.format() || null)
+  @Transform((created) => created?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
   createdAt: Moment;
 
-  @Transform(updated => updated?.format() || null)
+  @Transform((updated) => updated?.format() || null)
   @UpdateDateColumn({ transformer: new DateTransformer() })
   updatedAt: Moment;
 
-  @ManyToOne(
-    () => User,
-    user => user.userToRoles,
-    { onDelete: 'CASCADE' }
-  )
+  @ManyToOne(() => User, (user) => user.userToRoles, { onDelete: 'CASCADE' })
   public user!: User;
 
-  @ManyToOne(
-    () => Role,
-    role => role.roleToUsers,
-    { onDelete: 'CASCADE' }
-  )
+  @ManyToOne(() => Role, (role) => role.roleToUsers, { onDelete: 'CASCADE' })
   public role!: Role;
 }

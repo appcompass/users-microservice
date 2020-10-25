@@ -14,25 +14,17 @@ export class RolePermission {
   @PrimaryColumn()
   public permissionId: number;
 
-  @Transform(created => created?.format() || null)
+  @Transform((created) => created?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
   createdAt: Moment;
 
-  @Transform(updated => updated?.format() || null)
+  @Transform((updated) => updated?.format() || null)
   @UpdateDateColumn({ transformer: new DateTransformer() })
   updatedAt: Moment;
 
-  @ManyToOne(
-    () => Role,
-    role => role.roleToPermissions,
-    { onDelete: 'CASCADE' }
-  )
+  @ManyToOne(() => Role, (role) => role.roleToPermissions, { onDelete: 'CASCADE' })
   public role!: Role;
 
-  @ManyToOne(
-    () => Permission,
-    permission => permission.permissionToRoles,
-    { onDelete: 'CASCADE' }
-  )
+  @ManyToOne(() => Permission, (permission) => permission.permissionToRoles, { onDelete: 'CASCADE' })
   public permission!: Permission;
 }

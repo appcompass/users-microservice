@@ -26,32 +26,21 @@ export class UsersService {
   }
 
   async create(data: Partial<User>) {
-    return await this.connection.transaction(async entityManager => await entityManager.insert(User, data));
+    return await this.connection.transaction(async (entityManager) => await entityManager.insert(User, data));
   }
 
   async update(id: number, data: Partial<User>) {
     const { affected } = await this.connection.transaction(
-      async entityManager =>
-        await entityManager
-          .createQueryBuilder()
-          .update(User)
-          .set(data)
-          .where('id = :id', { id })
-          .execute()
+      async (entityManager) =>
+        await entityManager.createQueryBuilder().update(User).set(data).where('id = :id', { id }).execute()
     );
-
     return { affected };
   }
 
   async delete(id: number) {
     const { affected } = await this.connection.transaction(
-      async entityManager =>
-        await entityManager
-          .createQueryBuilder()
-          .delete()
-          .from(User)
-          .where('id = :id', { id })
-          .execute()
+      async (entityManager) =>
+        await entityManager.createQueryBuilder().delete().from(User).where('id = :id', { id }).execute()
     );
 
     return { affected };

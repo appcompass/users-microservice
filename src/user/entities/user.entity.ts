@@ -31,7 +31,7 @@ export class User {
   @Column({ type: 'varchar', length: 64 })
   public activationCode: string;
 
-  @Transform(activatedAt => activatedAt?.format() || null)
+  @Transform((activatedAt) => activatedAt?.format() || null)
   @Column({
     type: 'timestamp',
     nullable: true,
@@ -39,7 +39,7 @@ export class User {
   })
   public activatedAt: Moment;
 
-  @Transform(lastLogin => lastLogin?.format() || null)
+  @Transform((lastLogin) => lastLogin?.format() || null)
   @Column({
     type: 'timestamp',
     nullable: true,
@@ -55,29 +55,20 @@ export class User {
   })
   public tokenExpiration: Moment;
 
-  @Transform(created => created?.format() || null)
+  @Transform((created) => created?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
   createdAt: Moment;
 
-  @Transform(updated => updated?.format() || null)
+  @Transform((updated) => updated?.format() || null)
   @UpdateDateColumn({ transformer: new DateTransformer() })
   updatedAt: Moment;
 
-  @OneToMany(
-    () => UserLogin,
-    logins => logins.user
-  )
+  @OneToMany(() => UserLogin, (logins) => logins.user)
   public logins: UserLogin[];
 
-  @OneToMany(
-    () => UserPermission,
-    userPermission => userPermission.user
-  )
+  @OneToMany(() => UserPermission, (userPermission) => userPermission.user)
   public userToPermissions: UserPermission[];
 
-  @OneToMany(
-    () => UserRole,
-    userRole => userRole.user
-  )
+  @OneToMany(() => UserRole, (userRole) => userRole.user)
   public userToRoles: UserRole[];
 }

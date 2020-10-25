@@ -24,7 +24,7 @@ export class RegistrationCodeValidator implements ValidatorConstraintInterface {
 }
 
 export function IsRegistrationCode(validationOptions?: ValidationOptions) {
-  return function(object: Object, propertyName: string) {
+  return function (object: Object, propertyName: string) {
     registerDecorator({
       name: 'IsRegistrationCode',
       target: object.constructor,

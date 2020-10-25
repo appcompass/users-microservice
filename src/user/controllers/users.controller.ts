@@ -25,7 +25,7 @@ export class UsersController {
     // TODO: pull this out into a utility function. All list requests will have this option.
     const structuredOrder = order
       .split(',')
-      .map(row => row.split(':'))
+      .map((row) => row.split(':'))
       .reduce((o, [k, v]) => ((o[k.trim()] = (v || 'asc').trim()), o), {});
 
     const options = {

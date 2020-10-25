@@ -17,10 +17,7 @@ export class UserService {
   constructor(private readonly usersService: UsersService, private readonly messagingService: MessagingService) {}
 
   async register(data: RegisterUserDto) {
-    const activationCode = crypto
-      .createHash('sha256')
-      .update(data.email)
-      .digest('hex');
+    const activationCode = crypto.createHash('sha256').update(data.email).digest('hex');
 
     const password = await this.setPassword(data.password);
 

@@ -1,7 +1,6 @@
 import * as dotenv from 'dotenv';
+import * as Joi from 'joi';
 import { DatabaseType } from 'typeorm';
-
-import * as Joi from '@hapi/joi';
 
 export type EnvConfig = Record<string, string>;
 
@@ -9,7 +8,7 @@ export interface ValidConfig {
   NODE_ENV: string;
   SERVICE_HOST: string;
   SERVICE_PORT: number;
-  REDIS_URL: string;
+  NATS_URL: string;
   DB_TYPE: DatabaseType;
   DB_HOST: string;
   DB_PORT: number;
@@ -28,7 +27,7 @@ export class ConfigService {
     NODE_ENV: Joi.string().default('local'),
     SERVICE_HOST: Joi.string().default('0.0.0.0'),
     SERVICE_PORT: Joi.number().default(3000),
-    REDIS_URL: Joi.string().default('redis://localhost:6379'),
+    NATS_URL: Joi.string().default(['nats://localhost:4222']),
     DB_TYPE: Joi.string().default('postgres'),
     DB_HOST: Joi.string().default('127.0.0.1'),
     DB_PORT: Joi.number().default(5432),

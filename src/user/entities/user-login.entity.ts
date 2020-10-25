@@ -10,14 +10,10 @@ export class UserLogin {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Transform(loginAt => loginAt?.format() || null)
+  @Transform((loginAt) => loginAt?.format() || null)
   @CreateDateColumn({ name: 'login_at', transformer: new DateTransformer() })
   loginAt: Moment;
 
-  @ManyToOne(
-    () => User,
-    user => user.logins,
-    { onDelete: 'CASCADE' }
-  )
+  @ManyToOne(() => User, (user) => user.logins, { onDelete: 'CASCADE' })
   public user!: User;
 }

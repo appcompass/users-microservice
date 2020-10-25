@@ -35,31 +35,21 @@ export class Role {
   @Column({ type: 'text', nullable: false })
   public description: string;
 
-  @ManyToOne(
-    () => Permission,
-    permission => permission.assignableRoles,
-    { onDelete: 'CASCADE' }
-  )
+  @ManyToOne(() => Permission, (permission) => permission.assignableRoles, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'assignable_by_id' })
   public assignableBy: Permission;
 
-  @OneToMany(
-    () => UserRole,
-    userRole => userRole.role
-  )
+  @OneToMany(() => UserRole, (userRole) => userRole.role)
   public roleToUsers: UserRole[];
 
-  @OneToMany(
-    () => RolePermission,
-    rolePermission => rolePermission.role
-  )
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
   public roleToPermissions: RolePermission[];
 
-  @Transform(created => created?.format() || null)
+  @Transform((created) => created?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
   createdAt: Moment;
 
-  @Transform(updated => updated?.format() || null)
+  @Transform((updated) => updated?.format() || null)
   @UpdateDateColumn({ transformer: new DateTransformer() })
   updatedAt: Moment;
 }

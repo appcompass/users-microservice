@@ -1,5 +1,5 @@
 import { useContainer } from 'class-validator';
-import * as rateLimit from 'fastify-rate-limit';
+import rateLimit from 'fastify-rate-limit';
 import * as helmet from 'helmet';
 
 import {
@@ -40,9 +40,9 @@ async function bootstrap() {
   });
 
   app.connectMicroservice({
-    transport: Transport.REDIS,
+    transport: Transport.NATS,
     options: {
-      url: configService.get('REDIS_URL')
+      url: configService.get('NATS_URL')
     }
   });
 

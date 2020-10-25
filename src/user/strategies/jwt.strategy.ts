@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKeyProvider: async (request, rawJwtToken, done) =>
         this.messagingService
           .sendAsync<string, boolean>('authentication.public-key', true)
-          .then(publicKey => done(null, publicKey))
+          .then((publicKey) => done(null, publicKey))
     });
   }
 

@@ -38,43 +38,27 @@ export class Permission {
   @Column({ type: 'boolean', default: false, nullable: false })
   public system: number;
 
-  @Transform(created => created?.format() || null)
+  @Transform((created) => created?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
   createdAt: Moment;
 
-  @Transform(updated => updated?.format() || null)
+  @Transform((updated) => updated?.format() || null)
   @UpdateDateColumn({ transformer: new DateTransformer() })
   updatedAt: Moment;
 
-  @ManyToOne(
-    () => Permission,
-    permission => permission.assignablePermissions,
-    { onDelete: 'CASCADE' }
-  )
+  @ManyToOne(() => Permission, (permission) => permission.assignablePermissions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'assignable_by_id' })
   public assignableBy: Permission;
 
-  @OneToMany(
-    () => Permission,
-    permission => permission.assignableBy
-  )
+  @OneToMany(() => Permission, (permission) => permission.assignableBy)
   public assignablePermissions: Permission[];
 
-  @OneToMany(
-    () => Role,
-    role => role.assignableBy
-  )
+  @OneToMany(() => Role, (role) => role.assignableBy)
   public assignableRoles: Role[];
 
-  @OneToMany(
-    () => UserPermission,
-    userPermission => userPermission.permission
-  )
+  @OneToMany(() => UserPermission, (userPermission) => userPermission.permission)
   public permissionToUsers: UserPermission[];
 
-  @OneToMany(
-    () => RolePermission,
-    rolePermission => rolePermission.permission
-  )
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.permission)
   public permissionToRoles: RolePermission[];
 }

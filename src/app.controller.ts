@@ -8,7 +8,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('status')
-  @MessagePattern('users.status') // TODO: figure out how to cleanly prefix all messages senging and listening.
+  @MessagePattern('users.status')
   getServiceStatus() {
     return this.appService.getStatus();
   }
