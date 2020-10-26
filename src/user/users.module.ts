@@ -17,40 +17,9 @@ import { SameAsValidator } from './validators/same-as.validator';
 import { EmailUsedValidator } from './validators/unique-email.validator';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature(entities),
-    MessagingModule,
-    PassportModule.register({ defaultStrategy: 'jwt' })
-    // JwtModule.registerAsync({
-    //   imports: [MessagingService],
-    //   useFactory: async (messagingService: MessagingService) => {
-    //     const key = await messagingService.sendAsync<string, boolean>('authentication.public-key', true);
-    //     return {
-    //       verifyOptions: ''
-    //     // secretOrKeyProvider: (requestType, tokenOrPayload) => {
-    //     //   console.log(requestType, tokenOrPayload);
-    //     //   switch (requestType) {
-    //     //     case JwtSecretRequestType.SIGN:
-    //     //       throw Error('this service is not able to sign tokens!');
-    //     //     case JwtSecretRequestType.VERIFY:
-    //     //       return await messagingService.sendAsync<string, boolean>('authentication.public-key', true);
-    //     //     default:
-    //     //       throw Error('trying to do something else?');
-    //     //   }
-    //     // }
-    //     }
-    // }
-  ],
+  imports: [TypeOrmModule.forFeature(entities), MessagingModule, PassportModule.register({ defaultStrategy: 'jwt' })],
   controllers: [AuthController, UsersController],
   providers: [
-    // {
-    //   provide: JwtService,
-    //   useFactory: async (messagingService: MessagingService) => ({
-    //     verifyOptions:
-    //   })
-    //     await messagingService.sendAsync<string, boolean>('authentication.public-key', true),
-    //   inject: [MessagingService]
-    // },
     JwtStrategy,
     DBConfigService,
     UserService,

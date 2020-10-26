@@ -1,6 +1,7 @@
 import { useContainer } from 'class-validator';
-import rateLimit from 'fastify-rate-limit';
+import * as rateLimit from 'express-rate-limit';
 import * as helmet from 'helmet';
+import { RedocModule, RedocOptions } from 'nestjs-redoc';
 
 import {
   ClassSerializerInterceptor,
@@ -10,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
@@ -18,7 +20,7 @@ import { ConfigService } from './config/config.service';
 Error.stackTraceLimit = Infinity;
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   const configService = app.get(ConfigService);
@@ -32,12 +34,41 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
+  const options = new DocumentBuilder()
+    .setTitle('AppCompass Users Service')
+    .setDescription('A microservice for the AppCompass Web Application Platform')
+    .setVersion('1.0')
+    .addTag('Users')
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  const redocOptions: RedocOptions = {
+    sortPropsAlphabetically: true,
+    hideDownloadButton: false,
+    hideHostname: false
+  };
+
+  // @ts-ignore
+  await RedocModule.setup('/docs', app, document, redocOptions);
+
   app.enableCors();
-  app.use(helmet());
-  app.register(rateLimit, {
-    max: 150,
-    timeWindow: 1000 * 60 * 5
-  });
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'validator.swagger.io'],
+          scriptSrc: ["'self'", "https: 'unsafe-inline'"]
+        }
+      }
+    })
+  );
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 100
+    })
+  );
 
   app.connectMicroservice({
     transport: Transport.NATS,

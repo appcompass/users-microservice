@@ -1,4 +1,3 @@
-import { UserLogin } from 'src/user/entities/user-login.entity';
 import { ConnectionOptions } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
@@ -8,6 +7,7 @@ import { ConfigService } from '../config/config.service';
 import { Permission } from '../user/entities/permission.entity';
 import { RolePermission } from '../user/entities/role-permission.entity';
 import { Role } from '../user/entities/role.entity';
+import { UserLogin } from '../user/entities/user-login.entity';
 import { UserPermission } from '../user/entities/user-permission.entity';
 import { UserRole } from '../user/entities/user-role.entity';
 import { User } from '../user/entities/user.entity';

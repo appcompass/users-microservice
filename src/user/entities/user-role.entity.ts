@@ -1,8 +1,8 @@
 import { Transform } from 'class-transformer';
 import { Moment } from 'moment';
-import { DateTransformer } from 'src/db/transformers/date.transformer';
 import { CreateDateColumn, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
+import { DateTransformer } from '../../db/transformers/date.transformer';
 import { Role } from './role.entity';
 import { User } from './user.entity';
 

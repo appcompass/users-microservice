@@ -27,7 +27,7 @@ export class ConfigService {
     NODE_ENV: Joi.string().default('local'),
     SERVICE_HOST: Joi.string().default('0.0.0.0'),
     SERVICE_PORT: Joi.number().default(3000),
-    NATS_URL: Joi.string().default(['nats://localhost:4222']),
+    NATS_URL: Joi.string().default('nats://localhost:4222'),
     DB_TYPE: Joi.string().default('postgres'),
     DB_HOST: Joi.string().default('127.0.0.1'),
     DB_PORT: Joi.number().default(5432),

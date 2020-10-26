@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly userService: UsersService, private readonly messagingService: MessagingService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKeyProvider: async (request, rawJwtToken, done) =>
+      secretOrKeyProvider: (request, rawJwtToken, done) =>
         this.messagingService
           .sendAsync<string, boolean>('authentication.public-key', true)
           .then((publicKey) => done(null, publicKey))

@@ -1,11 +1,12 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import * as moment from 'moment';
-import { MessagingService } from 'src/messaging/messaging.service';
-import { User } from 'src/user/entities/user.entity';
 
 import { Injectable } from '@nestjs/common';
 
+import { ConfigService } from '../../config/config.service';
+import { MessagingService } from '../../messaging/messaging.service';
+import { User } from '../../user/entities/user.entity';
 import { RegisterUserDto } from '../dto/auth-register.dto';
 import { ResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { UsersService } from './users.service';
@@ -14,7 +15,11 @@ import { UsersService } from './users.service';
 export class UserService {
   private saltRounds = 10;
   passport;
-  constructor(private readonly usersService: UsersService, private readonly messagingService: MessagingService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+    private readonly messagingService: MessagingService
+  ) {}
 
   async register(data: RegisterUserDto) {
     const activationCode = crypto.createHash('sha256').update(data.email).digest('hex');
@@ -39,7 +44,7 @@ export class UserService {
     return { activationCode, sentEmail: true };
   }
 
-  async setPassword(password): Promise<string> {
+  async setPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, this.saltRounds);
   }
 
