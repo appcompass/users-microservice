@@ -6,6 +6,7 @@ import { DBConfigService, entities } from '../db/db-config.service';
 import { MessagingModule } from '../messaging/messaging.module';
 import { AuthController } from './controllers/auth.controller';
 import { UsersController } from './controllers/users.controller';
+import { PasswordResetService } from './services/password-reset.service';
 import { PermissionsService } from './services/permissions.service';
 import { RolesService } from './services/roles.service';
 import { UserService } from './services/user.service';
@@ -23,6 +24,7 @@ import { EmailUsedValidator } from './validators/unique-email.validator';
     JwtStrategy,
     DBConfigService,
     UserService,
+    PasswordResetService,
     PermissionsService,
     RolesService,
     UsersService,
@@ -31,6 +33,6 @@ import { EmailUsedValidator } from './validators/unique-email.validator';
     OrderQueryValidator,
     RegistrationCodeValidator
   ],
-  exports: [TypeOrmModule, UserService, UsersService, PermissionsService, RolesService]
+  exports: [TypeOrmModule, UserService, PasswordResetService, UsersService, PermissionsService, RolesService]
 })
 export class UsersModule {}

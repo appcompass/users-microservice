@@ -8,6 +8,7 @@ export interface ValidConfig {
   NODE_ENV: string;
   SERVICE_HOST: string;
   SERVICE_PORT: number;
+  PUBLIC_BASE_URL: string;
   NATS_URL: string;
   DB_TYPE: DatabaseType;
   DB_HOST: string;
@@ -27,6 +28,7 @@ export class ConfigService {
     NODE_ENV: Joi.string().default('local'),
     SERVICE_HOST: Joi.string().default('0.0.0.0'),
     SERVICE_PORT: Joi.number().default(3000),
+    PUBLIC_BASE_URL: Joi.string().default('http://127.0.0:3000'),
     NATS_URL: Joi.string().default('nats://localhost:4222'),
     DB_TYPE: Joi.string().default('postgres'),
     DB_HOST: Joi.string().default('127.0.0.1'),

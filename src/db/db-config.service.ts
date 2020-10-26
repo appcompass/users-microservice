@@ -1,3 +1,4 @@
+import { PasswordReset } from 'src/user/entities/password-reset.entity';
 import { ConnectionOptions } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
@@ -13,7 +14,16 @@ import { UserRole } from '../user/entities/user-role.entity';
 import { User } from '../user/entities/user.entity';
 import { DBNamingStrategy } from './naming.strategy';
 
-export const entities: Function[] = [User, Role, Permission, UserLogin, UserRole, UserPermission, RolePermission];
+export const entities: Function[] = [
+  User,
+  PasswordReset,
+  Role,
+  Permission,
+  UserLogin,
+  UserRole,
+  UserPermission,
+  RolePermission
+];
 
 @Injectable()
 export class DBConfigService implements TypeOrmOptionsFactory {

@@ -9,6 +9,7 @@ import { MessagingService } from '../../messaging/messaging.service';
 import { User } from '../../user/entities/user.entity';
 import { RegisterUserDto } from '../dto/auth-register.dto';
 import { ResetPasswordDto } from '../dto/auth-reset-password.dto';
+import { PasswordResetService } from './password-reset.service';
 import { UsersService } from './users.service';
 
 @Injectable()
@@ -18,67 +19,93 @@ export class UserService {
   constructor(
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
+    private readonly passwordResetService: PasswordResetService,
     private readonly messagingService: MessagingService
   ) {}
 
+  createHash(from: string) {
+    return crypto.createHash('sha256').update(from).digest('hex');
+  }
+
   async register(data: RegisterUserDto) {
-    const activationCode = crypto.createHash('sha256').update(data.email).digest('hex');
-
+    const activationCode = this.createHash(data.email);
     const password = await this.setPassword(data.password);
-
+    const email = data.email;
     await this.usersService.create({
-      email: data.email,
+      email,
       password,
       activationCode
     });
-    // TODO: clean up this work a bit more. Hard coding is a no go.
-    await this.messagingService.sendAsync<any, any>('notifier.send.email', {
+    await this.sendRegistrationEmail(email, activationCode);
+
+    return { sentEmail: true };
+  }
+
+  async sendRegistrationEmail(recipient: string, activationCode: string) {
+    const confirmationLink = this.getConfirmationLink(activationCode);
+
+    return await this.messagingService.sendAsync<boolean, any>('notifier.send.email', {
+      recipient,
       subject: 'Confirm Registration',
       body: [
-        'Thank you for registering!',
-        'Please use the following link to confirm your email address:',
-        this.getConfirmationLink(activationCode)
+        {
+          text: 'Thank you for registering!'
+        },
+        {
+          text: 'Please use the following link to confirm your email address:'
+        },
+        {
+          text: confirmationLink,
+          link: confirmationLink
+        }
       ]
     });
-
-    return { activationCode, sentEmail: true };
   }
 
   async setPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, this.saltRounds);
   }
 
-  // TODO: clean up this work a bit more along with above. Hard coding is a no go.
   private getConfirmationLink(activationCode: string) {
-    return `http://127.0.0:3000/confirm-registration?code=${activationCode}`;
+    // TODO: update this to get this value from the UI service.
+    const baseUrl = this.configService.get('PUBLIC_BASE_URL');
+
+    return `${baseUrl}/confirm-registration?code=${activationCode}`;
   }
 
   async confirmRegistration(activationCode: string) {
     const user = await this.usersService.findBy({ activationCode });
-    // TODO: email user confirmaiton activation.
-    return await this.usersService.update(user.id, {
+    const { affected } = await this.usersService.update(user.id, {
       active: true,
       activatedAt: moment(),
       activationCode: ''
     });
+
+    return { confirmation: !!affected };
   }
 
   async forgotPassword(email: string) {
     const user = await this.usersService.findBy({ email });
-    // TODO: generate and store reset token
-    // TODO: email user
-    // TODO: return reset
-    return user.email;
+    if (!user) return null;
+    const hashKey = `${user.email}-${moment().toISOString()}`;
+    const code = this.createHash(hashKey);
+    await this.passwordResetService.create({
+      code,
+      user: user
+    });
+    // TODO: this.sendPasswordResetConfirmationEmail(code, email);
+    return { sentEmail: true };
   }
 
-  async resetPassword({ code, email, password }: Omit<ResetPasswordDto, 'password_confirm'>) {
-    // TODO: get stored token by 'code'
-    code;
-    const { id } = await this.usersService.findBy({ email });
+  async resetPassword({ code, password }: Omit<ResetPasswordDto, 'password_confirm'>) {
+    const passwordReset = await this.passwordResetService.findBy({ code });
+    if (!passwordReset) return null;
 
-    return await this.usersService.update(id, {
+    const { affected } = await this.usersService.update(passwordReset.userId, {
       password: await this.setPassword(password)
     });
+
+    return { passwordReset: !!affected };
   }
 
   async validateUser(email: string, pass: string): Promise<User | null> {
