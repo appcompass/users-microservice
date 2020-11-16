@@ -4,10 +4,8 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 
 import { DateTransformer } from '../../db/transformers/date.transformer';
 import { UserLogin } from './user-login.entity';
-import { UserPermission } from './user-permission.entity';
-import { UserRole } from './user-role.entity';
 
-@Entity('users')
+@Entity({ schema: 'users', name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -65,10 +63,4 @@ export class User {
 
   @OneToMany(() => UserLogin, (logins) => logins.user)
   public logins: UserLogin[];
-
-  @OneToMany(() => UserPermission, (userPermission) => userPermission.user)
-  public userToPermissions: UserPermission[];
-
-  @OneToMany(() => UserRole, (userRole) => userRole.user)
-  public userToRoles: UserRole[];
 }

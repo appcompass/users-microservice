@@ -7,8 +7,6 @@ import { MessagingModule } from '../messaging/messaging.module';
 import { AuthController } from './controllers/auth.controller';
 import { UsersController } from './controllers/users.controller';
 import { PasswordResetService } from './services/password-reset.service';
-import { PermissionsService } from './services/permissions.service';
-import { RolesService } from './services/roles.service';
 import { UserService } from './services/user.service';
 import { UsersService } from './services/users.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -25,14 +23,12 @@ import { EmailUsedValidator } from './validators/unique-email.validator';
     DBConfigService,
     UserService,
     PasswordResetService,
-    PermissionsService,
-    RolesService,
     UsersService,
     EmailUsedValidator,
     SameAsValidator,
     OrderQueryValidator,
     RegistrationCodeValidator
   ],
-  exports: [TypeOrmModule, UserService, PasswordResetService, UsersService, PermissionsService, RolesService]
+  exports: [TypeOrmModule, UserService, PasswordResetService, UsersService]
 })
 export class UsersModule {}

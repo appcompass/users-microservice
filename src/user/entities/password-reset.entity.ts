@@ -5,7 +5,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } f
 import { DateTransformer } from '../../db/transformers/date.transformer';
 import { User } from './user.entity';
 
-@Entity('password_resets')
+@Entity({ schema: 'users', name: 'password_resets' })
 export class PasswordReset {
   @PrimaryGeneratedColumn()
   public id: number;

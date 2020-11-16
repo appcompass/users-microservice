@@ -5,7 +5,7 @@ import { CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typ
 import { DateTransformer } from '../../db/transformers/date.transformer';
 import { User } from './user.entity';
 
-@Entity('user_logins')
+@Entity({ schema: 'users', name: 'user_logins' })
 export class UserLogin {
   @PrimaryGeneratedColumn()
   public id: number;

@@ -1,12 +1,10 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class addUserLoginEntryLog1578359230572 implements MigrationInterface {
-  name = 'addUserLoginEntryLog1578359230572';
-
-  public async up(queryRunner: QueryRunner): Promise<any> {
+  public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `
-      CREATE OR REPLACE FUNCTION adds_user_login_entry() RETURNS TRIGGER AS
+      CREATE OR REPLACE FUNCTION users.adds_user_login_entry() RETURNS TRIGGER AS
       $BODY$
       BEGIN
         IF (old.last_login != new.last_login) THEN
@@ -19,14 +17,14 @@ export class addUserLoginEntryLog1578359230572 implements MigrationInterface {
 
       CREATE TRIGGER add_user_login_entry
         AFTER UPDATE
-        ON users
+        ON users.users
         FOR EACH ROW
-      EXECUTE PROCEDURE adds_user_login_entry();
+      EXECUTE PROCEDURE users.adds_user_login_entry();
       `
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.query('DROP FUNCTION adds_user_login_entry() CASCADE');
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query('DROP FUNCTION users.adds_user_login_entry() CASCADE');
   }
 }
