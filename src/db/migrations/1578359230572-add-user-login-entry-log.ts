@@ -8,7 +8,7 @@ export class addUserLoginEntryLog1578359230572 implements MigrationInterface {
       $BODY$
       BEGIN
         IF (old.last_login != new.last_login) THEN
-          INSERT INTO user_logins (user_id, login_at)
+          INSERT INTO users.user_logins (user_id, login_at)
           VALUES (new.id, new.last_login);
         END IF;
         RETURN new;

@@ -28,6 +28,7 @@ export class DBConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get('DB_USER'),
       password: this.configService.get('DB_PASSWORD'),
       database: this.configService.get('DB_NAME'),
+      schema: this.configService.get('DB_SCHEMA'),
       synchronize: this.configService.get('DB_SYNCHRONIZE'),
       migrationsRun: this.configService.get('DB_SYNCHRONIZE'),
       namingStrategy: new DBNamingStrategy(),

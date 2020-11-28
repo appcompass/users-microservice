@@ -41,7 +41,8 @@ export class AuthController {
     return req.user;
   }
 
-  @MessagePattern('user.login')
+  // This should be pub/sub style handler, that supports multiple instances of the same service only handling this message once.
+  @MessagePattern('users.user.login')
   async handleUserLoginEvent(@Payload() payload) {
     const { id, decodedToken } = payload;
     const data = {

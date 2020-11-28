@@ -37,7 +37,7 @@ export class UsersController {
     return this.usersService.findAll(options);
   }
 
-  @MessagePattern('user.find-by')
+  @MessagePattern('users.user.find-by')
   async findBy(@Payload() payload) {
     return await this.usersService.findBy(payload);
   }
@@ -54,7 +54,7 @@ export class UsersController {
     return this.usersService.delete(id);
   }
 
-  @MessagePattern('user.update')
+  @MessagePattern('users.user.update')
   async updateMessage(@Payload() payload: UpdateUserPrivateDto) {
     const { id, ...data } = payload;
     return await this.updateUser(id, data);

@@ -16,6 +16,7 @@ export interface ValidConfig {
   DB_USER: string;
   DB_PASSWORD: string;
   DB_NAME: string;
+  DB_SCHEMA: string;
   DB_SYNCHRONIZE: boolean;
   npm_package_name: string;
   npm_package_gitHead: string;
@@ -36,6 +37,7 @@ export class ConfigService {
     DB_USER: Joi.string(),
     DB_PASSWORD: Joi.string().allow(''),
     DB_NAME: Joi.string(),
+    DB_SCHEMA: Joi.string().default('public'),
     DB_SYNCHRONIZE: Joi.boolean().default(true),
     npm_package_name: Joi.string(),
     npm_package_gitHead: Joi.string(),
