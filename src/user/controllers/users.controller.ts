@@ -37,11 +37,6 @@ export class UsersController {
     return this.usersService.findAll(options);
   }
 
-  @MessagePattern('users.user.find-by')
-  async findBy(@Payload() payload) {
-    return await this.usersService.findBy(payload);
-  }
-
   @UseGuards(AuthGuard())
   @Put('users/:id')
   async updateRequest(@Param('id') id: number, @Body() payload: UpdateUserPublicDto) {
@@ -52,6 +47,11 @@ export class UsersController {
   @Delete('users/:id')
   async delete(@Param('id') id: number) {
     return this.usersService.delete(id);
+  }
+
+  @MessagePattern('users.user.find-by')
+  async findBy(@Payload() payload) {
+    return await this.usersService.findBy(payload);
   }
 
   @MessagePattern('users.user.update')
