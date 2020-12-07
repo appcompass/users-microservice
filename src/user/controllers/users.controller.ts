@@ -2,49 +2,48 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } fro
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
 
+import { Permissions } from '../../auth/decorators/permissions.decorator';
+import { FilterListQuery } from '../dto/filter-list.dto';
 import { CreateUserPayload } from '../dto/user-create.dto';
-import { SortUserListQuery } from '../dto/user-list.dto';
 import { UpdateUserPrivateDto, UpdateUserPublicDto } from '../dto/user-update.dto';
+import { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 import { UsersService } from '../services/users.service';
 
-@Controller()
+@Controller('users')
 export class UsersController {
   constructor(private readonly userService: UserService, private readonly usersService: UsersService) {}
 
   @UseGuards(AuthGuard())
-  @Post('users')
+  @Post()
+  @Permissions('users.user.create')
   async create(@Body() payload: CreateUserPayload) {
     return this.usersService.create(payload);
   }
 
   @UseGuards(AuthGuard())
-  @Get('users')
-  async list(@Query() query: SortUserListQuery) {
+  @Get()
+  @Permissions('users.user.read')
+  async list(@Query() query: FilterListQuery<User>) {
     const { skip, take, order } = query;
-    // TODO: pull this out into a utility function. All list requests will have this option.
-    const structuredOrder = order
-      .split(',')
-      .map((row) => row.split(':'))
-      .reduce((o, [k, v]) => ((o[k.trim()] = (v || 'asc').trim()), o), {});
-
     const options = {
       skip: +skip,
       take: +take,
-      order: structuredOrder
+      order
     };
-
     return this.usersService.findAll(options);
   }
 
   @UseGuards(AuthGuard())
-  @Put('users/:id')
+  @Put(':id')
+  @Permissions('users.user.update')
   async updateRequest(@Param('id') id: number, @Body() payload: UpdateUserPublicDto) {
     return await this.updateUser(id, payload);
   }
 
   @UseGuards(AuthGuard())
-  @Delete('users/:id')
+  @Delete(':id')
+  @Permissions('users.user.delete')
   async delete(@Param('id') id: number) {
     return this.usersService.delete(id);
   }

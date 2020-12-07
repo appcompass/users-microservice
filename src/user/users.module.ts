@@ -1,3 +1,5 @@
+import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
+
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,7 +11,6 @@ import { UsersController } from './controllers/users.controller';
 import { PasswordResetService } from './services/password-reset.service';
 import { UserService } from './services/user.service';
 import { UsersService } from './services/users.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { OrderQueryValidator } from './validators/order-query-string.validator';
 import { RegistrationCodeValidator } from './validators/registration-code.validator';
 import { SameAsValidator } from './validators/same-as.validator';

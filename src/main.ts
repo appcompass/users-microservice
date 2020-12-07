@@ -16,6 +16,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
+import { MessagingService } from './messaging/messaging.service';
+import { roles } from './service.data';
 
 Error.stackTraceLimit = Infinity;
 
@@ -78,6 +80,7 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservicesAsync();
+  await app.get(MessagingService).sendAsync('authorization.register.roles', roles);
   await app.listen(configService.get('SERVICE_PORT'), configService.get('SERVICE_HOST'));
 }
 bootstrap();
