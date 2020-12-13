@@ -99,12 +99,13 @@ export class UserService {
 
   async resetPassword({ code, password }: Omit<ResetPasswordDto, 'password_confirm'>) {
     const passwordReset = await this.passwordResetService.findBy({ code });
+    const id = passwordReset.userId;
     if (!passwordReset) return null;
 
-    const { affected } = await this.usersService.update(passwordReset.userId, {
+    const { affected } = await this.usersService.update(id, {
       password: await this.setPassword(password)
     });
-
+    this.messagingService.emit('authentication.user.logout', { id });
     return { passwordReset: !!affected };
   }
 

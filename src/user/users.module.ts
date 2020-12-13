@@ -1,6 +1,6 @@
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -28,7 +28,8 @@ import { EmailUsedValidator } from './validators/unique-email.validator';
     EmailUsedValidator,
     SameAsValidator,
     OrderQueryValidator,
-    RegistrationCodeValidator
+    RegistrationCodeValidator,
+    Logger
   ],
   exports: [TypeOrmModule, UserService, PasswordResetService, UsersService]
 })

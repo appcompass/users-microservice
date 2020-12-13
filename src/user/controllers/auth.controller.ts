@@ -1,7 +1,6 @@
-import * as moment from 'moment';
+
 
 import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
 
 import { ConfirmRegistrationDto } from '../dto/auth-confirm-registration.dto';
@@ -9,11 +8,10 @@ import { ForgotPasswordDto } from '../dto/auth-forgot-password.dto';
 import { RegisterUserDto } from '../dto/auth-register.dto';
 import { ResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { UserService } from '../services/user.service';
-import { UsersService } from '../services/users.service';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly userService: UserService, private readonly usersService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Post('register')
   async register(@Body() payload: RegisterUserDto) {
@@ -39,17 +37,5 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
-  }
-
-  // This should be pub/sub style handler, that supports multiple instances of the same service only handling this message once.
-  @MessagePattern('users.user.login')
-  async handleUserLoginEvent(@Payload() payload) {
-    const { id, decodedToken } = payload;
-    const data = {
-      lastLogin: moment(),
-      tokenExpiration: moment.unix(decodedToken.exp)
-    };
-
-    return await this.usersService.update(id, data);
   }
 }

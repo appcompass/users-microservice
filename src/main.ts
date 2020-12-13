@@ -75,12 +75,16 @@ async function bootstrap() {
   app.connectMicroservice({
     transport: Transport.NATS,
     options: {
-      url: configService.get('NATS_URL')
+      url: configService.get('NATS_URL'),
+      queue: 'users'
     }
   });
 
   await app.startAllMicroservicesAsync();
-  await app.get(MessagingService).sendAsync('authorization.register.roles', roles);
   await app.listen(configService.get('SERVICE_PORT'), configService.get('SERVICE_HOST'));
+
+  app
+    .get(MessagingService)
+    .emit('authorization.register.roles', { data: roles, respondTo: 'users.confirmation.register.roles' });
 }
 bootstrap();

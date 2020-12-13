@@ -1,5 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Put,
+  Query,
+  UnprocessableEntityException,
+  UseGuards
+} from '@nestjs/common';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
 
 import { Permissions } from '../../auth/decorators/permissions.decorator';
@@ -12,13 +24,19 @@ import { UsersService } from '../services/users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UserService, private readonly usersService: UsersService) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly userService: UserService,
+    private readonly usersService: UsersService
+  ) {
+    this.logger.setContext('UsersController');
+  }
 
   @UseGuards(AuthGuard())
   @Post()
   @Permissions('users.user.create')
   async create(@Body() payload: CreateUserPayload) {
-    return this.usersService.create(payload);
+    return await this.usersService.create(payload);
   }
 
   @UseGuards(AuthGuard())
@@ -31,7 +49,11 @@ export class UsersController {
       take: +take,
       order
     };
-    return this.usersService.findAll(options);
+    try {
+      return await this.usersService.findAll(options);
+    } catch (error) {
+      throw new UnprocessableEntityException(error.message);
+    }
   }
 
   @UseGuards(AuthGuard())
@@ -45,7 +67,7 @@ export class UsersController {
   @Delete(':id')
   @Permissions('users.user.delete')
   async delete(@Param('id') id: number) {
-    return this.usersService.delete(id);
+    return await this.usersService.delete(id);
   }
 
   @MessagePattern('users.user.find-by')
@@ -57,6 +79,13 @@ export class UsersController {
   async updateMessage(@Payload() payload: UpdateUserPrivateDto) {
     const { id, ...data } = payload;
     return await this.updateUser(id, data);
+  }
+
+  @EventPattern('users.confirmation.register.roles')
+  handleEventConfirmations(@Payload() payload: boolean) {
+    return payload
+      ? this.logger.log('Service Roles registered successfully')
+      : this.logger.error('Service Roles not registered successfully');
   }
 
   private async updateUser(id: number, payload: UpdateUserPublicDto | UpdateUserPrivateDto) {

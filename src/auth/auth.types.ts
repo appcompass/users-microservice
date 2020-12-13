@@ -1,4 +1,4 @@
-export type DecodedToken = {
+export interface DecodedToken {
   id: number;
   permissions: string[];
   email: string;
@@ -6,4 +6,4 @@ export type DecodedToken = {
   sub: number;
   iat: number;
   exp: number;
-};
+}
