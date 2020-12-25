@@ -1,4 +1,4 @@
-import { PasswordReset } from 'src/user/entities/password-reset.entity';
+import { PasswordReset } from '../user/entities/password-reset.entity';
 import { ConnectionOptions } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
