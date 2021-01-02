@@ -68,7 +68,7 @@ export class UserService {
 
   private getConfirmationLink(activationCode: string) {
     // TODO: update this to get this value from the UI service.
-    const baseUrl = this.configService.get('PUBLIC_BASE_URL');
+    const baseUrl = this.configService.get('serviceHost');
 
     return `${baseUrl}/confirm-registration?code=${activationCode}`;
   }

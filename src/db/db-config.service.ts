@@ -1,10 +1,10 @@
-import { PasswordReset } from '../user/entities/password-reset.entity';
 import { ConnectionOptions } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
 import { ConfigService } from '../config/config.service';
+import { PasswordReset } from '../user/entities/password-reset.entity';
 import { UserLogin } from '../user/entities/user-login.entity';
 import { User } from '../user/entities/user.entity';
 import { DBNamingStrategy } from './naming.strategy';
@@ -22,15 +22,15 @@ export class DBConfigService implements TypeOrmOptionsFactory {
   get config() {
     return {
       logging: this.configService.get('NODE_ENV') === 'production' ? ['error', 'schema', 'warn'] : 'all',
-      type: this.configService.get('DB_TYPE'),
-      host: this.configService.get('DB_HOST'),
-      port: this.configService.get('DB_PORT'),
-      username: this.configService.get('DB_USER'),
-      password: this.configService.get('DB_PASSWORD'),
-      database: this.configService.get('DB_NAME'),
-      schema: this.configService.get('DB_SCHEMA'),
-      synchronize: this.configService.get('DB_SYNCHRONIZE'),
-      migrationsRun: this.configService.get('DB_SYNCHRONIZE'),
+      type: this.configService.get('dbType'),
+      host: this.configService.get('dbHost'),
+      port: this.configService.get('dbPort'),
+      username: this.configService.get('dbUser'),
+      password: this.configService.get('dbPassword'),
+      database: this.configService.get('dbName'),
+      schema: this.configService.get('dbSchema'),
+      synchronize: this.configService.get('dbSyncronize'),
+      migrationsRun: this.configService.get('dbSyncronize'),
       namingStrategy: new DBNamingStrategy(),
       entities,
       migrations: [`${__dirname}/migrations/*{.js,.ts}`],
