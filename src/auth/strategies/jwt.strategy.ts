@@ -1,22 +1,19 @@
 import * as moment from 'moment';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UsersService } from 'src/user/services/users.service';
 
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 
-import { MessagingService } from '../../messaging/messaging.service';
+import { ConfigService } from '../../config/config.service';
+import { UsersService } from '../../user/services/users.service';
 import { DecodedToken } from '../auth.types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly userService: UsersService, private readonly messagingService: MessagingService) {
+  constructor(readonly userService: UsersService, readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKeyProvider: (request, rawJwtToken, done) =>
-        this.messagingService
-          .sendAsync<string, boolean>('authentication.public-key', true)
-          .then((publicKey) => done(null, publicKey))
+      secretOrKey: configService.get('publicKey')
     });
   }
 
