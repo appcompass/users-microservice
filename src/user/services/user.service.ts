@@ -9,6 +9,7 @@ import { MessagingService } from '../../messaging/messaging.service';
 import { User } from '../../user/entities/user.entity';
 import { RegisterUserDto } from '../dto/auth-register.dto';
 import { ResetPasswordDto } from '../dto/auth-reset-password.dto';
+import { UpdateUserPrivateDto, UpdateUserPublicDto } from '../dto/user-update.dto';
 import { PasswordResetService } from './password-reset.service';
 import { UsersService } from './users.service';
 
@@ -113,5 +114,12 @@ export class UserService {
     const user = await this.usersService.findBy({ email, active: true });
     if (!user) return null;
     if (await bcrypt.compare(pass, user.password)) return user;
+  }
+
+  async updateUser(id: number, payload: UpdateUserPublicDto | UpdateUserPrivateDto) {
+    const { password, ...data } = payload;
+
+    if (password) data['password'] = await this.setPassword(payload.password);
+    return await this.usersService.update(id, data);
   }
 }

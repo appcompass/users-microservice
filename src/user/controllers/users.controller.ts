@@ -11,36 +11,35 @@ import {
   UnprocessableEntityException,
   UseGuards
 } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
 
 import { Permissions } from '../../auth/decorators/permissions.decorator';
 import { FilterListQuery } from '../dto/filter-list.dto';
 import { CreateUserPayload } from '../dto/user-create.dto';
-import { UpdateUserPrivateDto, UpdateUserPublicDto } from '../dto/user-update.dto';
+import { UpdateUserPublicDto } from '../dto/user-update.dto';
 import { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 import { UsersService } from '../services/users.service';
 
-@Controller('users')
+@Controller()
 export class UsersController {
   constructor(
     private readonly logger: Logger,
     private readonly userService: UserService,
     private readonly usersService: UsersService
   ) {
-    this.logger.setContext('UsersController');
+    this.logger.setContext(this.constructor.name);
   }
 
   @UseGuards(AuthGuard())
-  @Post()
+  @Post('users')
   @Permissions('users.user.create')
   async create(@Body() payload: CreateUserPayload) {
     return await this.usersService.create(payload);
   }
 
   @UseGuards(AuthGuard())
-  @Get()
+  @Get('users')
   @Permissions('users.user.read')
   async list(@Query() query: FilterListQuery<User>) {
     const { skip, take, order } = query;
@@ -57,41 +56,16 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard())
-  @Put(':id')
+  @Put('users/:id')
   @Permissions('users.user.update')
   async updateRequest(@Param('id') id: number, @Body() payload: UpdateUserPublicDto) {
-    return await this.updateUser(id, payload);
+    return await this.userService.updateUser(id, payload);
   }
 
   @UseGuards(AuthGuard())
-  @Delete(':id')
+  @Delete('users/:id')
   @Permissions('users.user.delete')
   async delete(@Param('id') id: number) {
     return await this.usersService.delete(id);
-  }
-
-  @MessagePattern('users.user.find-by')
-  async findBy(@Payload() payload) {
-    return await this.usersService.findBy(payload);
-  }
-
-  @MessagePattern('users.user.update')
-  async updateMessage(@Payload() payload: UpdateUserPrivateDto) {
-    const { id, ...data } = payload;
-    return await this.updateUser(id, data);
-  }
-
-  @EventPattern('users.confirmation.register.roles')
-  handleEventConfirmations(@Payload() payload: boolean) {
-    return payload
-      ? this.logger.log('Service Roles registered successfully')
-      : this.logger.error('Service Roles not registered successfully');
-  }
-
-  private async updateUser(id: number, payload: UpdateUserPublicDto | UpdateUserPrivateDto) {
-    const { password, ...data } = payload;
-
-    if (password) data['password'] = await this.userService.setPassword(payload.password);
-    return await this.usersService.update(id, data);
   }
 }

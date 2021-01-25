@@ -7,7 +7,7 @@ import { IsEmailUsed } from '../validators/unique-email.validator';
 export class RegisterUserDto {
   @IsEmail()
   @IsEmailUsed(false)
-  @Transform((email) => email.toLowerCase())
+  @Transform(({ value }) => value.toLowerCase())
   readonly email: string;
 
   @IsString()

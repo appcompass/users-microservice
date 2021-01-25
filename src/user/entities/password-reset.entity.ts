@@ -5,7 +5,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } f
 import { DateTransformer } from '../../db/transformers/date.transformer';
 import { User } from './user.entity';
 
-@Entity({ schema: 'users', name: 'password_resets' })
+@Entity('password_resets')
 export class PasswordReset {
   @PrimaryGeneratedColumn()
   public id: number;
@@ -20,7 +20,7 @@ export class PasswordReset {
   })
   public code: string;
 
-  @Transform((created) => created?.format() || null)
+  @Transform(({ value }) => value?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
   createdAt: Moment;
 

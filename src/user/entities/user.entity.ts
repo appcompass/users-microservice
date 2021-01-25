@@ -5,7 +5,7 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 import { DateTransformer } from '../../db/transformers/date.transformer';
 import { UserLogin } from './user-login.entity';
 
-@Entity({ schema: 'users', name: 'users' })
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -29,7 +29,7 @@ export class User {
   @Column({ type: 'varchar', length: 64 })
   public activationCode: string;
 
-  @Transform((activatedAt) => activatedAt?.format() || null)
+  @Transform(({ value }) => value?.format() || null)
   @Column({
     type: 'timestamp',
     nullable: true,
@@ -37,7 +37,7 @@ export class User {
   })
   public activatedAt: Moment;
 
-  @Transform((lastLogin) => lastLogin?.format() || null)
+  @Transform(({ value }) => value?.format() || null)
   @Column({
     type: 'timestamp',
     nullable: true,
@@ -53,11 +53,11 @@ export class User {
   })
   public tokenExpiration: Moment;
 
-  @Transform((created) => created?.format() || null)
+  @Transform(({ value }) => value?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
   createdAt: Moment;
 
-  @Transform((updated) => updated?.format() || null)
+  @Transform(({ value }) => value?.format() || null)
   @UpdateDateColumn({ transformer: new DateTransformer() })
   updatedAt: Moment;
 

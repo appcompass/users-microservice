@@ -7,7 +7,7 @@ import { IsEmailUsed } from '../validators/unique-email.validator';
 export class ForgotPasswordDto {
   @IsEmail()
   @IsEmailUsed(true)
-  @Transform((email) => email.toLowerCase())
+  @Transform(({ value }) => value.toLowerCase())
   readonly email: string;
 
   @IsNotEmpty()

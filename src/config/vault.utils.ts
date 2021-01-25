@@ -1,57 +1,76 @@
 import * as vault from 'node-vault';
 
-export const getVaultConfig = async () => {
-  const client = vault({
-    token: process.env.VAULT_TOKEN
-  });
-  try {
-    const [
-      serviceHost,
-      servicePort,
-      natsUrl,
-      publicKey,
-      natsQueue,
-      dbType,
-      dbHost,
-      dbPort,
-      dbSchema,
-      dbUser,
-      dbPassword,
-      dbName,
-      dbSyncronize
-    ] = await Promise.all(
-      [
-        'secret/service/shared/usersServiceHost',
-        'secret/service/shared/usersServicePort',
-        'secret/service/shared/natsUrl',
-        'secret/service/shared/publicKey',
-        'secret/service/users/natsQueue',
-        'secret/service/users/dbType',
-        'secret/service/users/dbHost',
-        'secret/service/users/dbPort',
-        'secret/service/users/dbSchema',
-        'secret/service/users/dbUser',
-        'secret/service/users/dbPassword',
-        'secret/service/users/dbName',
-        'secret/service/users/dbSyncronize'
-      ].map((path) => client.read(path).then(({ data }) => data.value))
-    );
-    return {
-      serviceHost,
-      servicePort,
-      natsUrl,
-      publicKey,
-      natsQueue,
-      dbType,
-      dbHost,
-      dbPort,
-      dbSchema,
-      dbUser,
-      dbPassword,
-      dbName,
-      dbSyncronize
-    };
-  } catch (error) {
-    throw Error(error.response.body.warnings);
+export class VaultConfig {
+  private client: vault.client;
+  constructor(private serviceName: string = 'users') {
+    this.client = vault({
+      token: process.env.VAULT_TOKEN
+    });
   }
-};
+
+  async getServiceUrl(name: string) {
+    try {
+      const [serviceHost, servicePort] = await Promise.all(
+        [`secret/service/shared/${name}ServiceHost`, `secret/service/shared/${name}ServicePort`].map((path) =>
+          this.client.read(path).then(({ data }) => data.value)
+        )
+      );
+      return `http://${serviceHost}:${servicePort}`;
+    } catch (error) {
+      throw Error(error.response.body.warnings);
+    }
+  }
+
+  async getServiceConfig() {
+    try {
+      const [
+        natsUrl,
+        publicKey,
+        serviceHost,
+        servicePort,
+        natsQueue,
+        dbType,
+        dbHost,
+        dbPort,
+        dbSchema,
+        dbUser,
+        dbPassword,
+        dbName,
+        dbSynchronize
+      ] = await Promise.all(
+        [
+          'secret/service/shared/natsUrl',
+          'secret/service/shared/publicKey',
+          `secret/service/shared/${this.serviceName}ServiceHost`,
+          `secret/service/shared/${this.serviceName}ServicePort`,
+          `secret/service/${this.serviceName}/natsQueue`,
+          `secret/service/${this.serviceName}/dbType`,
+          `secret/service/${this.serviceName}/dbHost`,
+          `secret/service/${this.serviceName}/dbPort`,
+          `secret/service/${this.serviceName}/dbSchema`,
+          `secret/service/${this.serviceName}/dbUser`,
+          `secret/service/${this.serviceName}/dbPassword`,
+          `secret/service/${this.serviceName}/dbName`,
+          `secret/service/${this.serviceName}/dbSynchronize`
+        ].map((path) => this.client.read(path).then(({ data }) => data.value))
+      );
+      return {
+        serviceHost,
+        servicePort,
+        natsUrl,
+        publicKey,
+        natsQueue,
+        dbType,
+        dbHost,
+        dbPort,
+        dbSchema,
+        dbUser,
+        dbPassword,
+        dbName,
+        dbSynchronize
+      };
+    } catch (error) {
+      throw Error(error.response.body.warnings);
+    }
+  }
+}

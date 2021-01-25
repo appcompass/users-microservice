@@ -10,7 +10,7 @@ export class UserLogin {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Transform((loginAt) => loginAt?.format() || null)
+  @Transform(({ value }) => value?.format() || null)
   @CreateDateColumn({ name: 'login_at', transformer: new DateTransformer() })
   loginAt: Moment;
 
