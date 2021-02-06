@@ -1,7 +1,7 @@
-import { ConnectionOptions } from 'typeorm';
+import { LoggerOptions } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
-import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
+import { TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
 import { ConfigService } from '../config/config.service';
 import { PasswordReset } from '../user/entities/password-reset.entity';
@@ -15,22 +15,16 @@ export const entities: Function[] = [User, PasswordReset, UserLogin];
 export class DBConfigService implements TypeOrmOptionsFactory {
   constructor(private readonly configService: ConfigService) {}
 
-  createTypeOrmOptions(): TypeOrmModuleOptions {
+  createTypeOrmOptions() {
     return this.config;
   }
 
   get config() {
     return {
-      logging: this.configService.get('NODE_ENV') === 'production' ? ['error', 'schema', 'warn'] : 'all',
-      type: this.configService.get('dbType'),
-      host: this.configService.get('dbHost'),
-      port: this.configService.get('dbPort'),
-      username: this.configService.get('dbUser'),
-      password: this.configService.get('dbPassword'),
-      database: this.configService.get('dbName'),
-      schema: this.configService.get('dbSchema'),
-      synchronize: this.configService.get('dbSynchronize'),
-      migrationsRun: this.configService.get('dbSynchronize'),
+      logging: (this.configService.get('NODE_ENV') === 'production'
+        ? ['error', 'schema', 'warn']
+        : 'all') as LoggerOptions,
+      ...this.configService.get('db'),
       namingStrategy: new DBNamingStrategy(),
       entities,
       migrations: [`${__dirname}/migrations/*{.js,.ts}`],
@@ -39,6 +33,6 @@ export class DBConfigService implements TypeOrmOptionsFactory {
         migrationsDir: 'src/db/migrations',
         subscribersDir: 'src/db/subscribers'
       }
-    } as ConnectionOptions;
+    };
   }
 }
