@@ -26,7 +26,7 @@ export class DBConfigService implements TypeOrmOptionsFactory {
         : 'all') as LoggerOptions,
       ...this.configService.get('db'),
       namingStrategy: new DBNamingStrategy(),
-      entities,
+      entities: [`${__dirname}/../**/*.entity{.js,.ts}`],
       migrations: [`${__dirname}/migrations/*{.js,.ts}`],
       cli: {
         entitiesDir: 'src/db/entities',

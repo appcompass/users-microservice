@@ -16,9 +16,6 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "schema:create": "ts-node setup.ts schema:create",
-    "schema:drop": "ts-node setup.ts schema:drop",
-    "schema:reset": "ts-node setup.ts schema:reset",
     "format": "eslint '*/**/*.{js,ts}' --quiet --fix",
     "start": "nest start",
     "start:dev": "nest start --watch",
