@@ -23,21 +23,21 @@ export class VaultConfig {
 
   async getServiceConfig() {
     try {
-      const [natsUrl, publicKey, serviceHost, servicePort, natsQueue, db] = await Promise.all(
+      const [publicKey, serviceHost, servicePort, natsUrl, natsQueue, db] = await Promise.all(
         [
-          'secret/service/shared/natsUrl',
           'secret/service/shared/publicKey',
           `secret/service/shared/${this.serviceName}ServiceHost`,
           `secret/service/shared/${this.serviceName}ServicePort`,
+          `secret/service/${this.serviceName}/natsUrl`,
           `secret/service/${this.serviceName}/natsQueue`,
           `secret/service/${this.serviceName}/db`
         ].map((path) => this.client.read(path).then(({ data }) => data.value))
       );
       return {
+        publicKey,
         serviceHost,
         servicePort,
         natsUrl,
-        publicKey,
         natsQueue,
         db: JSON.parse(db)
       };
