@@ -4,7 +4,6 @@ import * as moment from 'moment';
 
 import { Injectable } from '@nestjs/common';
 
-import { ConfigService } from '../../config/config.service';
 import { MessagingService } from '../../messaging/messaging.service';
 import { User } from '../../user/entities/user.entity';
 import { RegisterUserDto } from '../dto/auth-register.dto';
@@ -18,7 +17,6 @@ export class UserService {
   private saltRounds = 10;
   passport;
   constructor(
-    private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly passwordResetService: PasswordResetService,
     private readonly messagingService: MessagingService
@@ -37,41 +35,12 @@ export class UserService {
       password,
       activationCode
     });
-    await this.sendRegistrationEmail(email, activationCode);
 
-    return { sentEmail: true };
-  }
-
-  async sendRegistrationEmail(recipient: string, activationCode: string) {
-    const confirmationLink = this.getConfirmationLink(activationCode);
-
-    return await this.messagingService.sendAsync<boolean, any>('notifier.send.email', {
-      recipient,
-      subject: 'Confirm Registration',
-      body: [
-        {
-          text: 'Thank you for registering!'
-        },
-        {
-          text: 'Please use the following link to confirm your email address:'
-        },
-        {
-          text: confirmationLink,
-          link: confirmationLink
-        }
-      ]
-    });
+    return { activationCode };
   }
 
   async setPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, this.saltRounds);
-  }
-
-  private getConfirmationLink(activationCode: string) {
-    // TODO: update this to get this value from the UI service.
-    const baseUrl = this.configService.get('serviceHost');
-
-    return `${baseUrl}/confirm-registration?code=${activationCode}`;
   }
 
   async confirmRegistration(activationCode: string) {
