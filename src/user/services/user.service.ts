@@ -30,13 +30,14 @@ export class UserService {
     const activationCode = this.createHash(data.email);
     const password = await this.setPassword(data.password);
     const email = data.email;
-    await this.usersService.create({
+    const { identifiers } = await this.usersService.create({
       email,
       password,
       activationCode
     });
-
-    return { activationCode };
+    const [identifier] = identifiers;
+    await this.messagingService.emitAsync('users.user.registered', { email, activationCode });
+    return { userId: identifier.id };
   }
 
   async setPassword(password: string): Promise<string> {
@@ -63,7 +64,7 @@ export class UserService {
       code,
       user: user
     });
-    // TODO: this.sendPasswordResetConfirmationEmail(code, email);
+    await this.messagingService.emitAsync('users.user.forgot-password', { code, user });
     return { sentEmail: true };
   }
 
