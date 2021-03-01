@@ -36,8 +36,8 @@ export class UserService {
       activationCode
     });
     const [identifier] = identifiers;
-    await this.messagingService.emitAsync('users.user.registered', { email, activationCode });
-    return { userId: identifier.id };
+    const userId: number = identifier.id;
+    return { activationCode, userId, email };
   }
 
   async setPassword(password: string): Promise<string> {

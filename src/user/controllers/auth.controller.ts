@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { MessagingService } from 'src/messaging/messaging.service';
+
+import { Body, Controller, Get, Logger, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { ConfirmRegistrationDto } from '../dto/auth-confirm-registration.dto';
@@ -9,11 +11,23 @@ import { UserService } from '../services/user.service';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly userService: UserService,
+    private readonly messagingService: MessagingService
+  ) {
+    this.logger.setContext(this.constructor.name);
+  }
 
   @Post('register')
   async register(@Body() payload: RegisterUserDto) {
-    return await this.userService.register(payload);
+    const { activationCode, userId, email } = await this.userService.register(payload);
+
+    this.logger.log(`User '${email}' registered successfully.  Activation Code: ${activationCode}`);
+
+    await this.messagingService.emitAsync('users.user.registered', { email, activationCode });
+
+    return { userId };
   }
 
   @Get('confirm-registration')
