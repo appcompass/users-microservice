@@ -68,7 +68,7 @@ export class UserService {
     return { sentEmail: true };
   }
 
-  async resetPassword({ code, password }: Omit<ResetPasswordDto, 'password_confirm'>) {
+  async resetPassword({ code, password }: Omit<ResetPasswordDto, 'passwordConfirm'>) {
     const passwordReset = await this.passwordResetService.findBy({ code });
     const id = passwordReset.userId;
     if (!passwordReset) return null;

@@ -13,5 +13,5 @@ export class ResetPasswordDto {
   @IsString()
   @IsNotEmpty()
   @IsSameAs('password')
-  readonly password_confirm: string;
+  readonly passwordConfirm: string;
 }

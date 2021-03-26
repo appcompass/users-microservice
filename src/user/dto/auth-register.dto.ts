@@ -17,5 +17,5 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   @IsSameAs('password')
-  readonly password_confirm: string;
+  readonly passwordConfirm: string;
 }

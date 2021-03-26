@@ -46,11 +46,11 @@ export class InterServiceController {
   @MessagePattern('users.user.find-by')
   async findBy(@Payload() payload) {
     const user = await this.usersService.findBy(payload);
-    return { ...user };
+    return user?.id ? { ...user } : null;
   }
 
   @MessagePattern('users.user.update')
-  async updateMessage(@Payload() payload: UpdateUserPrivateDto) {
+  async updateUser(@Payload() payload: UpdateUserPrivateDto) {
     const { id, ...data } = payload;
     return await this.userService.updateUser(id, data);
   }
