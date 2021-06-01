@@ -66,7 +66,7 @@ const commands = {
           })
         }
       ].map(({ key, value }) => client.write(key, { value }))
-    ).then(() => console.log('key pair secrets and config set'));
+    ).then(() => console.log('config set'));
   },
   'schema:create': () => queryRunner((config) => `create schema if not exists ${config.schema};`),
   'schema:drop': () => queryRunner((config) => `drop schema if exists ${config.schema} cascade;`),

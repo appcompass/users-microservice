@@ -1,11 +1,10 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 import { ConfigService } from '../../config/config.service';
-import { VaultConfig } from '../../config/vault.utils';
 
 export class addUserLoginEntryLog1578359230572 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const config = new ConfigService(await new VaultConfig().getServiceConfig());
+    const config = await new ConfigService().setConfigFromVault();
     const { schema } = config.get('db');
     await queryRunner.query(
       `
@@ -30,7 +29,7 @@ export class addUserLoginEntryLog1578359230572 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const config = new ConfigService(await new VaultConfig().getServiceConfig());
+    const config = await new ConfigService().setConfigFromVault();
     const { schema } = config.get('db');
     await queryRunner.query(`DROP FUNCTION ${schema}.adds_user_login_entry() CASCADE`);
   }
