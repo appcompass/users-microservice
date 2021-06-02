@@ -1,3 +1,5 @@
+import { getConnection } from 'typeorm';
+
 import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
@@ -21,38 +23,50 @@ export class InterServiceController {
 
   @MessagePattern('users.user.register')
   async register(@Payload() payload: RegisterUserDto) {
-    const { activationCode, userId, email } = await this.userService.register(payload);
+    return await getConnection().transaction(async (manager) => {
+      const { activationCode, userId, email } = await this.userService.register(manager, payload);
 
-    this.logger.log(`User '${email}' registered successfully.  Activation Code: ${activationCode}`);
+      this.logger.log(`User '${email}' registered successfully.  Activation Code: ${activationCode}`);
 
-    return { activationCode, userId, email };
+      return { activationCode, userId, email };
+    });
   }
 
   @MessagePattern('users.user.confirm-registration')
   async confirmRegistration(@Payload() { code }: ConfirmRegistrationDto) {
-    return await this.userService.confirmRegistration(code);
+    return await getConnection().transaction(async (manager) => {
+      return await this.userService.confirmRegistration(manager, code);
+    });
   }
 
   @MessagePattern('users.user.forgot-password')
   async forgotPassword(@Payload() { email }: ForgotPasswordDto) {
-    return await this.userService.forgotPassword(email);
+    return await getConnection().transaction(async (manager) => {
+      return await this.userService.forgotPassword(manager, email);
+    });
   }
 
   @MessagePattern('users.user.reset-password')
   async resetPassword(@Payload() { code, password }: ResetPasswordDto) {
-    return await this.userService.resetPassword({ code, password });
+    return await getConnection().transaction(async (manager) => {
+      return await this.userService.resetPassword(manager, { code, password });
+    });
   }
 
   @MessagePattern('users.user.find-by')
   async findBy(@Payload() payload) {
-    const user = await this.usersService.findBy(payload);
-    return user?.id ? { ...user } : null;
+    return await getConnection().transaction(async (manager) => {
+      const user = await this.usersService.findBy(manager, payload);
+      return user?.id ? { ...user } : null;
+    });
   }
 
   @MessagePattern('users.user.update')
   async updateUser(@Payload() payload: UpdateUserPrivateDto) {
     const { id, ...data } = payload;
-    return await this.userService.updateUser(id, data);
+    return await getConnection().transaction(async (manager) => {
+      return await this.userService.updateUser(manager, id, data);
+    });
   }
 
   @MessagePattern('users.confirmation.register.roles')

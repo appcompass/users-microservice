@@ -5,6 +5,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface
 } from 'class-validator';
+import { getManager } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
@@ -16,8 +17,14 @@ export class EmailUsedValidator implements ValidatorConstraintInterface {
   constructor(protected readonly usersService: UsersService) {}
   async validate(email: string, args: ValidationArguments) {
     const isUsedCheck = args.constraints[0];
-    const user = await this.usersService.findBy({ email });
-    return isUsedCheck ? !!user : !user;
+    try {
+      const user = await getManager().transaction(
+        async (manager) => await this.usersService.findBy(manager, { email })
+      );
+      return isUsedCheck ? !!user : !user;
+    } catch (error) {
+      return isUsedCheck ? false : true;
+    }
   }
 
   defaultMessage(args: ValidationArguments) {

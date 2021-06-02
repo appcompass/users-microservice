@@ -11,7 +11,7 @@ export const roles = [
         system: true
       },
       {
-        name: 'users.us.read',
+        name: 'users.user.read',
         label: 'Read User',
         description: 'Allows viewing of users',
         system: true

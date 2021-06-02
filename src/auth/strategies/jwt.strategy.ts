@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { getManager } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
@@ -19,7 +20,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(token: DecodedToken) {
     const tokenExpiration = moment.unix(token.exp);
-    const user = await this.userService.findBy({ id: token.sub });
+    const user = await getManager().transaction(
+      async (manager) => await this.userService.findBy(manager, { id: token.sub })
+    );
     return !moment(user.tokenExpiration).diff(tokenExpiration) && moment().isBefore(tokenExpiration) ? token : false;
   }
 }

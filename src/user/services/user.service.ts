@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import * as moment from 'moment';
+import { EntityManager } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
@@ -26,27 +27,27 @@ export class UserService {
     return crypto.createHash('sha256').update(from).digest('hex');
   }
 
-  async register(data: RegisterUserDto) {
+  async register(manager: EntityManager, data: RegisterUserDto) {
     const activationCode = this.createHash(data.email);
     const password = await this.setPassword(data.password);
-    const email = data.email;
-    const { identifiers } = await this.usersService.create({
+    const email = data.email.toLowerCase();
+    const { generatedMaps } = await this.usersService.create(manager, {
       email,
       password,
       activationCode
     });
-    const [identifier] = identifiers;
-    const userId: number = identifier.id;
+    const [{ id }] = generatedMaps;
+    const userId: number = id;
     return { activationCode, userId, email };
   }
 
   async setPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, this.saltRounds);
+    return bcrypt.hashSync(password, this.saltRounds);
   }
 
-  async confirmRegistration(activationCode: string) {
-    const user = await this.usersService.findBy({ activationCode });
-    const { affected } = await this.usersService.update(user.id, {
+  async confirmRegistration(manager: EntityManager, activationCode: string) {
+    const user = await this.usersService.findBy(manager, { activationCode });
+    const { affected } = await this.usersService.update(manager, user.id, {
       active: true,
       activatedAt: moment(),
       activationCode: ''
@@ -55,8 +56,8 @@ export class UserService {
     return { confirmation: !!affected };
   }
 
-  async forgotPassword(email: string) {
-    const user = await this.usersService.findBy({ email });
+  async forgotPassword(manager: EntityManager, email: string) {
+    const user = await this.usersService.findBy(manager, { email });
     if (!user) return null;
     const hashKey = `${user.email}-${moment().toISOString()}`;
     const code = this.createHash(hashKey);
@@ -68,28 +69,28 @@ export class UserService {
     return { sentEmail: true };
   }
 
-  async resetPassword({ code, password }: Omit<ResetPasswordDto, 'passwordConfirm'>) {
+  async resetPassword(manager: EntityManager, { code, password }: Omit<ResetPasswordDto, 'passwordConfirm'>) {
     const passwordReset = await this.passwordResetService.findBy({ code });
     const id = passwordReset.userId;
     if (!passwordReset) return null;
 
-    const { affected } = await this.usersService.update(id, {
+    const { affected } = await this.usersService.update(manager, id, {
       password: await this.setPassword(password)
     });
     this.messagingService.emit('authentication.user.logout', { id });
     return { passwordReset: !!affected };
   }
 
-  async validateUser(email: string, pass: string): Promise<User | null> {
-    const user = await this.usersService.findBy({ email, active: true });
+  async validateUser(manager: EntityManager, email: string, pass: string): Promise<User | null> {
+    const user = await this.usersService.findBy(manager, { email, active: true });
     if (!user) return null;
-    if (await bcrypt.compare(pass, user.password)) return user;
+    if (bcrypt.compareSync(pass, user.password)) return user;
   }
 
-  async updateUser(id: number, payload: UpdateUserPublicDto | UpdateUserPrivateDto) {
+  async updateUser(manager: EntityManager, id: number, payload: UpdateUserPublicDto | UpdateUserPrivateDto) {
     const { password, ...data } = payload;
 
     if (password) data['password'] = await this.setPassword(payload.password);
-    return await this.usersService.update(id, data);
+    return await this.usersService.update(manager, id, data);
   }
 }

@@ -4,6 +4,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface
 } from 'class-validator';
+import { getManager } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
@@ -14,7 +15,9 @@ import { UsersService } from '../services/users.service';
 export class RegistrationCodeValidator implements ValidatorConstraintInterface {
   constructor(protected readonly usersService: UsersService) {}
   async validate(activationCode: string) {
-    const user = await this.usersService.findBy({ activationCode });
+    const user = await getManager().transaction(
+      async (manager) => await this.usersService.findBy(manager, { activationCode })
+    );
     return !!user;
   }
 

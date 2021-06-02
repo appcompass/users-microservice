@@ -8,7 +8,6 @@ export class PermissionsGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
     const routePermissions = this.reflector.get<string[]>('permissions', context.getHandler());
     if (!routePermissions) return true;
-
     const userPermissions = context.getArgs()[0].user.permissions || [];
 
     return routePermissions.every((routePermission) => userPermissions.includes(routePermission));
