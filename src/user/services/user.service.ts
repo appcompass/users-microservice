@@ -41,6 +41,10 @@ export class UserService {
     return { activationCode, userId, email };
   }
 
+  randomPassword(length: number = 16) {
+    return crypto.randomBytes(length).toString('hex');
+  }
+
   async setPassword(password: string): Promise<string> {
     return bcrypt.hashSync(password, this.saltRounds);
   }

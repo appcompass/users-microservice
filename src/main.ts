@@ -40,13 +40,14 @@ function applyValidators(app) {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 }
 
-async function addSwaggerDocs(app) {
+async function addSwaggerDocs(app, configService) {
   const options = new DocumentBuilder()
     .setTitle('AppCompass Users Service')
     .setDescription('A microservice for the AppCompass Web Application Platform')
     .setVersion('1.0')
-    .addTag('Users')
+    .addTag(configService.get('npm_package_name'))
     .build();
+
   const document = SwaggerModule.createDocument(app, options);
   const redocOptions: RedocOptions = {
     sortPropsAlphabetically: true,
@@ -69,8 +70,7 @@ function applySecurity(app) {
   );
 }
 
-async function startApp(app) {
-  const configService = app.get(ConfigService);
+async function startApp(app, configService) {
   const messagingConfigService = app.get(MessagingConfigService);
 
   app.connectMicroservice(messagingConfigService.eventsConfig);
@@ -81,12 +81,13 @@ async function startApp(app) {
 
 async function bootstrap() {
   const app = await createApp();
+  const configService = app.get(ConfigService);
 
   applyValidators(app);
-  await addSwaggerDocs(app);
+  await addSwaggerDocs(app, configService);
   applySecurity(app);
 
-  await startApp(app);
+  await startApp(app, configService);
 
   app
     .get(MessagingService)

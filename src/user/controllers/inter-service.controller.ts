@@ -21,6 +21,26 @@ export class InterServiceController {
     this.logger.setContext(this.constructor.name);
   }
 
+  @MessagePattern('users.user.find-or-create-by-email')
+  async findOrCreateUser(@Payload() email: string) {
+    return await getConnection().transaction(async (manager) => {
+      try {
+        return await this.usersService.findBy(manager, { email });
+      } catch (error) {
+        const password = await this.userService.setPassword(this.userService.randomPassword());
+        const data = {
+          email,
+          password,
+          activationCode: '',
+          active: true
+        };
+        const { generatedMaps } = await this.usersService.create(manager, data);
+        const [{ id }] = generatedMaps;
+        return await this.usersService.findBy(manager, { id });
+      }
+    });
+  }
+
   @MessagePattern('users.user.register')
   async register(@Payload() payload: RegisterUserDto) {
     return await getConnection().transaction(async (manager) => {
