@@ -50,27 +50,34 @@ export class UserService {
   }
 
   async confirmRegistration(manager: EntityManager, activationCode: string) {
-    const user = await this.usersService.findBy(manager, { activationCode });
-    const { affected } = await this.usersService.update(manager, user.id, {
-      active: true,
-      activatedAt: moment(),
-      activationCode: ''
-    });
-
-    return { confirmation: !!affected };
+    try {
+      const user = await this.usersService.findBy(manager, { activationCode });
+      const { affected } = await this.usersService.update(manager, user.id, {
+        active: true,
+        activatedAt: moment(),
+        activationCode: ''
+      });
+      return { confirmation: !!affected };
+    } catch (error) {
+      return { confirmation: false };
+    }
   }
 
   async forgotPassword(manager: EntityManager, email: string) {
-    const user = await this.usersService.findBy(manager, { email });
-    if (!user) return null;
-    const hashKey = `${user.email}-${moment().toISOString()}`;
-    const code = this.createHash(hashKey);
-    await this.passwordResetService.create({
-      code,
-      user: user
-    });
-    await this.messagingService.emitAsync('users.user.forgot-password', { code, user });
-    return { sentEmail: true };
+    try {
+      const user = await this.usersService.findBy(manager, { email });
+      if (!user) return null;
+      const hashKey = `${user.email}-${moment().toISOString()}`;
+      const code = this.createHash(hashKey);
+      await this.passwordResetService.create({
+        code,
+        user: user
+      });
+      await this.messagingService.emitAsync('users.user.forgot-password', { code, user });
+      return { sentEmail: true };
+    } catch (error) {
+      return { sentEmail: false };
+    }
   }
 
   async resetPassword(manager: EntityManager, { code, password }: Omit<ResetPasswordDto, 'passwordConfirm'>) {
@@ -86,9 +93,13 @@ export class UserService {
   }
 
   async validateUser(manager: EntityManager, email: string, pass: string): Promise<User | null> {
-    const user = await this.usersService.findBy(manager, { email, active: true });
-    if (!user) return null;
-    if (bcrypt.compareSync(pass, user.password)) return user;
+    try {
+      const user = await this.usersService.findBy(manager, { email, active: true });
+      if (!user) return null;
+      if (bcrypt.compareSync(pass, user.password)) return user;
+    } catch (error) {
+      return null;
+    }
   }
 
   async updateUser(manager: EntityManager, id: number, payload: UpdateUserPublicDto | UpdateUserPrivateDto) {

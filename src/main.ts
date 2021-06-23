@@ -54,7 +54,7 @@ async function addSwaggerDocs(app: NestExpressApplication, serviceName: string) 
     hideHostname: false
   };
 
-  await RedocModule.setup('/docs', app, document, redocOptions);
+  await RedocModule.setup('docs', app, document, redocOptions);
 }
 
 function applySecurity(app: NestExpressApplication, appConfig: AppConfig) {

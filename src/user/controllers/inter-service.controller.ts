@@ -76,8 +76,12 @@ export class InterServiceController {
   @MessagePattern('users.user.find-by')
   async findBy(@Payload() payload) {
     return await getConnection().transaction(async (manager) => {
-      const user = await this.usersService.findBy(manager, payload);
-      return user?.id ? { ...user } : null;
+      try {
+        const user = await this.usersService.findBy(manager, payload);
+        return { ...user };
+      } catch (error) {
+        return null;
+      }
     });
   }
 

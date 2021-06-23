@@ -15,9 +15,13 @@ import { UsersService } from '../services/users.service';
 export class RegistrationCodeValidator implements ValidatorConstraintInterface {
   constructor(protected readonly usersService: UsersService) {}
   async validate(activationCode: string) {
-    const user = await getManager().transaction(
-      async (manager) => await this.usersService.findBy(manager, { activationCode })
-    );
+    const user = await getManager().transaction(async (manager) => {
+      try {
+        return await this.usersService.findBy(manager, { activationCode });
+      } catch (error) {
+        return null;
+      }
+    });
     return !!user;
   }
 
