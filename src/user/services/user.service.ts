@@ -69,7 +69,7 @@ export class UserService {
       if (!user) return null;
       const hashKey = `${user.email}-${moment().toISOString()}`;
       const code = this.createHash(hashKey);
-      await this.passwordResetService.create({
+      await this.passwordResetService.create(manager, {
         code,
         user: user
       });
@@ -81,14 +81,18 @@ export class UserService {
   }
 
   async resetPassword(manager: EntityManager, { code, password }: Omit<ResetPasswordDto, 'passwordConfirm'>) {
-    const passwordReset = await this.passwordResetService.findBy({ code });
+    const passwordReset = await this.passwordResetService.findBy(manager, { code });
+    if (!passwordReset?.userId) return null;
+
     const id = passwordReset.userId;
-    if (!passwordReset) return null;
 
     const { affected } = await this.usersService.update(manager, id, {
       password: await this.setPassword(password)
     });
-    this.messagingService.emit('authentication.user.logout', { id });
+    await this.messagingService.emitAsync('authentication.user.logout', { id });
+    await this.passwordResetService.update(manager, passwordReset.id, {
+      used: true
+    });
     return { passwordReset: !!affected };
   }
 

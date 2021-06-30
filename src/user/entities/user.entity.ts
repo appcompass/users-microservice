@@ -3,6 +3,7 @@ import { Moment } from 'moment';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { DateTransformer } from '../../db/transformers/date.transformer';
+import { PasswordReset } from './password-reset.entity';
 import { UserLogin } from './user-login.entity';
 
 @Entity('users')
@@ -61,6 +62,9 @@ export class User {
   @UpdateDateColumn({ transformer: new DateTransformer() })
   updatedAt: Moment;
 
-  @OneToMany(() => UserLogin, (logins) => logins.user)
+  @OneToMany(() => UserLogin, (login) => login.user)
   public logins: UserLogin[];
+
+  @OneToMany(() => PasswordReset, (reset) => reset.user)
+  public passwordResets: PasswordReset[];
 }

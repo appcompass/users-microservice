@@ -1,32 +1,36 @@
-import { Connection, FindConditions, Repository } from 'typeorm';
+import { EntityManager, FindConditions } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 
 import { PasswordReset } from '../entities/password-reset.entity';
 
 @Injectable()
 export class PasswordResetService {
-  constructor(
-    private readonly connection: Connection,
-    @InjectRepository(PasswordReset)
-    private readonly passwordResetRepository: Repository<PasswordReset>
-  ) {}
-
-  async findBy(conditions: FindConditions<PasswordReset>) {
-    return await this.passwordResetRepository.findOne(conditions);
+  async findBy(manager: EntityManager, conditions: FindConditions<PasswordReset>) {
+    return await manager.getRepository(PasswordReset).findOne(conditions);
   }
 
-  async create(data: Partial<PasswordReset>) {
-    return await this.connection.transaction(async (entityManager) => await entityManager.insert(PasswordReset, data));
+  async create(manager: EntityManager, data: Partial<PasswordReset>) {
+    return await manager.insert(PasswordReset, data);
   }
 
-  async delete(id: number) {
-    const { affected } = await this.connection.transaction(
-      async (entityManager) =>
-        await entityManager.createQueryBuilder().delete().from(PasswordReset).where('id = :id', { id }).execute()
-    );
+  async update(manager: EntityManager, id: number, data: Partial<PasswordReset>) {
+    const { affected } = await manager
+      .createQueryBuilder()
+      .update(PasswordReset)
+      .set(data)
+      .where('id = :id', { id })
+      .execute();
+    return { affected };
+  }
 
+  async delete(manager: EntityManager, id: number) {
+    const { affected } = await manager
+      .createQueryBuilder()
+      .delete()
+      .from(PasswordReset)
+      .where('id = :id', { id })
+      .execute();
     return { affected };
   }
 }

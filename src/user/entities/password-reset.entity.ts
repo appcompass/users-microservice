@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { Moment } from 'moment';
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { DateTransformer } from '../../db/transformers/date.transformer';
 import { User } from './user.entity';
@@ -8,22 +8,29 @@ import { User } from './user.entity';
 @Entity('password_resets')
 export class PasswordReset {
   @PrimaryGeneratedColumn()
-  public id: number;
+  id: number;
 
   @Column({ type: 'int' })
-  public userId: number;
+  userId: number;
 
   @Column({
     type: 'varchar',
     unique: true,
     length: 64
   })
-  public code: string;
+  code: string;
+
+  @Column({ type: 'boolean', default: false, nullable: false })
+  used: boolean;
 
   @Transform(({ value }) => value?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
   createdAt: Moment;
 
-  @ManyToOne(() => User, (user) => user.logins, { onDelete: 'CASCADE' })
-  public user!: User;
+  @Transform(({ value }) => value?.format() || null)
+  @UpdateDateColumn({ transformer: new DateTransformer() })
+  updatedAt: Moment;
+
+  @ManyToOne(() => User, (user) => user.passwordResets, { onDelete: 'CASCADE' })
+  user!: User;
 }

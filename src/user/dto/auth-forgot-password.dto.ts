@@ -12,5 +12,5 @@ export class ForgotPasswordDto {
 
   @IsNotEmpty()
   @IsSameAs('email')
-  readonly email_confirm: string;
+  readonly emailConfirm: string;
 }

@@ -13,6 +13,7 @@ import { UserService } from './services/user.service';
 import { UsersService } from './services/users.service';
 import { OrderQueryValidator } from './validators/order-query-string.validator';
 import { RegistrationCodeValidator } from './validators/registration-code.validator';
+import { ResetPasswordCodeNotUsedValidator } from './validators/reset-password-code-not-used';
 import { SameAsValidator } from './validators/same-as.validator';
 import { EmailUsedValidator } from './validators/unique-email.validator';
 
@@ -29,6 +30,7 @@ import { EmailUsedValidator } from './validators/unique-email.validator';
     SameAsValidator,
     OrderQueryValidator,
     RegistrationCodeValidator,
+    ResetPasswordCodeNotUsedValidator,
     Logger
   ],
   exports: [TypeOrmModule, UserService, PasswordResetService, UsersService]
