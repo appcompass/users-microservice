@@ -1,6 +1,7 @@
 # AppCompass Users Service
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/e384a77e714dec5366e7/maintainability)](https://codeclimate.com/github/appcompass/users-microservice/maintainability)
+![example workflow](https://github.com/appcompass/users-microservice/actions/workflows/code-quality-and-tests.yml/badge.svg?branch=main)
 
 ## Description
 
