@@ -29,9 +29,9 @@ export class AuthController {
     return await getConnection().transaction(async (manager) => {
       const { activationCode, userId, email } = await this.userService.register(manager, payload);
 
-      this.logger.log(`User '${email}' registered successfully.  Activation Code: ${activationCode}`);
+      this.logger.log(`User '${email}' (id: '${userId}') registered successfully.  Activation Code: ${activationCode}`);
 
-      await this.messagingService.emitAsync('users.user.registered', { email, activationCode });
+      await this.messagingService.emitAsync('users.user.registered', { userId, email, activationCode });
 
       return { userId };
     });

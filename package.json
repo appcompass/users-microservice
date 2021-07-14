@@ -26,7 +26,6 @@
     "setup:db": "ts-node src/setup.ts schema:create",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm --config src/db/cli-config.ts",
     "deps:check": "depcruise --validate .dependency-cruiser.json src",
-    "test": "jest",
     "test:unit": "jest --config ./test/jest-unit.json",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
