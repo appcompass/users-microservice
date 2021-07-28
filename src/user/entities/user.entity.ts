@@ -17,18 +17,18 @@ export class User {
     unique: true,
     nullable: false
   })
-  public email: string;
+  email: string;
 
   @Exclude()
   @Column({ type: 'varchar', length: 255, nullable: false })
-  public password: string;
+  password: string;
 
   @Column({ type: 'boolean', default: false, nullable: false })
-  public active: boolean;
+  active: boolean;
 
   @Exclude()
   @Column({ type: 'varchar', length: 64 })
-  public activationCode: string;
+  activationCode: string;
 
   @Transform(({ value }) => value?.format() || null)
   @Column({
@@ -36,7 +36,7 @@ export class User {
     nullable: true,
     transformer: new DateTransformer()
   })
-  public activatedAt: Moment;
+  activatedAt: Moment;
 
   @Transform(({ value }) => value?.format() || null)
   @Column({
@@ -44,15 +44,16 @@ export class User {
     nullable: true,
     transformer: new DateTransformer()
   })
-  public lastLogin: Moment;
+  lastLogin: Moment;
 
-  @Exclude()
+  @Transform(({ value }) => value?.format() || null)
   @Column({
     type: 'timestamp',
-    nullable: true,
+    nullable: false,
+    default: 'now()',
     transformer: new DateTransformer()
   })
-  public tokenExpiration: Moment;
+  lastLogout: Moment;
 
   @Transform(({ value }) => value?.format() || null)
   @CreateDateColumn({ transformer: new DateTransformer() })
@@ -63,8 +64,8 @@ export class User {
   updatedAt: Moment;
 
   @OneToMany(() => UserLogin, (login) => login.user)
-  public logins: UserLogin[];
+  logins: UserLogin[];
 
   @OneToMany(() => PasswordReset, (reset) => reset.user)
-  public passwordResets: PasswordReset[];
+  passwordResets: PasswordReset[];
 }

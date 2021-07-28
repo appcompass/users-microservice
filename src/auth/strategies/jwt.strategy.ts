@@ -19,10 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(token: DecodedToken) {
-    const tokenExpiration = moment.unix(token.exp);
+    const tokenIssuedAt = moment.unix(token.iat);
     const user = await getManager().transaction(
       async (manager) => await this.userService.findBy(manager, { id: token.sub })
     );
-    return !moment(user.tokenExpiration).diff(tokenExpiration) && moment().isBefore(tokenExpiration) ? token : false;
+    return moment(user.lastLogout).isBefore(tokenIssuedAt) ? token : false;
   }
 }
