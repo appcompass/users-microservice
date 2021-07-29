@@ -1,6 +1,6 @@
 import { getConnection } from 'typeorm';
 
-import { Controller, Logger } from '@nestjs/common';
+import { ConsoleLogger, Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { ConfirmRegistrationDto } from '../dto/auth-confirm-registration.dto';
@@ -14,7 +14,7 @@ import { UsersService } from '../services/users.service';
 @Controller()
 export class InterServiceController {
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: ConsoleLogger,
     private readonly userService: UserService,
     private readonly usersService: UsersService
   ) {

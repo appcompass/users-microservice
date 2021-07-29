@@ -3,10 +3,10 @@ import { getConnection } from 'typeorm';
 
 import {
   Body,
+  ConsoleLogger,
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Post,
   Put,
@@ -33,7 +33,7 @@ import { UsersService } from '../services/users.service';
 @ApiUnprocessableEntityResponse(unprocessableEntityResponseOptions)
 export class UsersController {
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: ConsoleLogger,
     private readonly userService: UserService,
     private readonly usersService: UsersService
   ) {

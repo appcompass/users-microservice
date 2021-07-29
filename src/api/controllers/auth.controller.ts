@@ -1,7 +1,7 @@
 import { MessagingService } from 'src/messaging/messaging.service';
 import { getConnection } from 'typeorm';
 
-import { Body, Controller, Get, Logger, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, ConsoleLogger, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiNotFoundResponse, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 
@@ -17,7 +17,7 @@ import { UserService } from '../services/user.service';
 @ApiUnprocessableEntityResponse(unprocessableEntityResponseOptions)
 export class AuthController {
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: ConsoleLogger,
     private readonly userService: UserService,
     private readonly messagingService: MessagingService
   ) {

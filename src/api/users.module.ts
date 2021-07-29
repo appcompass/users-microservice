@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { ConsoleLogger, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -31,7 +31,7 @@ import { EmailUsedValidator } from './validators/unique-email.validator';
     OrderQueryValidator,
     RegistrationCodeValidator,
     ResetPasswordCodeNotUsedValidator,
-    Logger
+    ConsoleLogger
   ],
   exports: [TypeOrmModule, UserService, PasswordResetService, UsersService]
 })
