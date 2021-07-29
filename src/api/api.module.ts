@@ -35,4 +35,4 @@ import { EmailUsedValidator } from './validators/unique-email.validator';
   ],
   exports: [TypeOrmModule, UserService, PasswordResetService, UsersService]
 })
-export class UsersModule {}
+export class ApiModule {}
