@@ -5,8 +5,8 @@ import { getManager } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 
+import { UsersService } from '../../api/services/users.service';
 import { ConfigService } from '../../config/config.service';
-import { UsersService } from '../../user/services/users.service';
 import { DecodedToken } from '../auth.types';
 
 @Injectable()

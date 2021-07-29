@@ -6,10 +6,10 @@ import { EntityManager } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 import { MessagingService } from '../../messaging/messaging.service';
-import { User } from '../../user/entities/user.entity';
 import { RegisterUserDto } from '../dto/auth-register.dto';
 import { ResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { UpdateUserPrivateDto, UpdateUserPublicDto } from '../dto/user-update.dto';
+import { User } from '../entities/user.entity';
 import { PasswordResetService } from './password-reset.service';
 import { UsersService } from './users.service';
 

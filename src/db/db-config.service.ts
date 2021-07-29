@@ -3,10 +3,10 @@ import { LoggerOptions } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
+import { PasswordReset } from '../api/entities/password-reset.entity';
+import { UserLogin } from '../api/entities/user-login.entity';
+import { User } from '../api/entities/user.entity';
 import { ConfigService } from '../config/config.service';
-import { PasswordReset } from '../user/entities/password-reset.entity';
-import { UserLogin } from '../user/entities/user-login.entity';
-import { User } from '../user/entities/user.entity';
 import { DBNamingStrategy } from './naming.strategy';
 
 export const entities: Function[] = [User, PasswordReset, UserLogin];
