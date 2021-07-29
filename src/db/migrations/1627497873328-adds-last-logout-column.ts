@@ -8,6 +8,11 @@ export class addsLastLogoutColumn1627497873328 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     const config = await new ConfigService().setConfigFromVault();
     const { schema } = config.get('db');
+
+    await queryRunner.query(`
+      UPDATE "${schema}"."users" SET "token_expiration" = now()
+    `);
+
     await queryRunner.query(`
       ALTER TABLE "${schema}"."users"
       RENAME COLUMN "token_expiration" TO "last_logout"
@@ -21,10 +26,6 @@ export class addsLastLogoutColumn1627497873328 implements MigrationInterface {
       ALTER TABLE "${schema}"."users"
       ALTER COLUMN "last_logout"
       SET DEFAULT 'now()'
-    `);
-
-    await queryRunner.query(`
-      UPDATE "${schema}"."users" SET "last_logout" = now()
     `);
   }
 
