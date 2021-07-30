@@ -24,6 +24,8 @@
     "start:prod": "node dist/setup schema:create && node dist/main",
     "setup:secrets": "ts-node src/setup.ts setup:secrets",
     "setup:db": "ts-node src/setup.ts schema:create",
+    "image:build": "docker build . --file Dockerfile --tag appcompass/users-service:latest",
+    "image:push": "docker push appcompass/users-service:latest",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm --config src/db/cli-config.ts",
     "deps:check": "depcruise --validate .dependency-cruiser.json src",
     "test:unit": "jest --config ./test/jest-unit.json",
