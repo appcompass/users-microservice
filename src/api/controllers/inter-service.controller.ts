@@ -8,6 +8,7 @@ import { ForgotPasswordDto } from '../dto/auth-forgot-password.dto';
 import { RegisterUserDto } from '../dto/auth-register.dto';
 import { ResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { UpdateUserPrivateDto } from '../dto/user-update.dto';
+import { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 import { UsersService } from '../services/users.service';
 
@@ -90,6 +91,18 @@ export class InterServiceController {
     const { id, ...data } = payload;
     return await getConnection().transaction(async (manager) => {
       return await this.userService.updateUser(manager, id, data);
+    });
+  }
+
+  @MessagePattern('users.user.exists')
+  async doesUserExist(@Payload() payload: Partial<User>) {
+    return await getConnection().transaction(async (manager) => {
+      try {
+        await this.usersService.findBy(manager, payload);
+        return true;
+      } catch (error) {
+        return false;
+      }
     });
   }
 
