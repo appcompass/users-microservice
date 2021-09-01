@@ -5,9 +5,11 @@ import {
   Body,
   ConsoleLogger,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -19,11 +21,12 @@ import { ApiBearerAuth, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse 
 
 import { Permissions } from '../../auth/decorators/permissions.decorator';
 import { unauthorizedResponseOptions, unprocessableEntityResponseOptions } from '../api.contract-shapes';
-import { FilterListQuery } from '../dto/filter-list.dto';
+import { OrderQuery } from '../api.types';
 import { CreateUserPayload } from '../dto/user-create.dto';
 import { UpdateUserPublicDto } from '../dto/user-update.dto';
 import { User } from '../entities/user.entity';
 import { NoEmptyPayloadPipe } from '../pipes/no-empty-payload.pipe';
+import { QueryOrderPipe } from '../pipes/query-order.pipe';
 import { UserService } from '../services/user.service';
 import { UsersService } from '../services/users.service';
 
@@ -62,16 +65,23 @@ export class UsersController {
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Get()
   @Permissions('users.user.read')
-  async list(@Query() query: FilterListQuery<User>) {
+  async list(
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
+    @Query('take', new DefaultValuePipe(20), ParseIntPipe) take: number,
+    @Query('order', new DefaultValuePipe(''), QueryOrderPipe) order: OrderQuery<User>,
+    @Query('filter', new DefaultValuePipe('')) filter?: string
+  ) {
     return await getConnection().transaction(async (manager) => {
-      const { skip, take, order } = query;
-      const options = {
-        skip: +skip,
-        take: +take,
-        order
-      };
       try {
-        return await this.usersService.findAll(manager, options);
+        const { data, total } = await this.usersService.findAll(manager, { skip, take, order, filter });
+        return {
+          data,
+          pagination: {
+            total,
+            skip,
+            take
+          }
+        };
       } catch (error) {
         throw new UnprocessableEntityException(error.message);
       }
