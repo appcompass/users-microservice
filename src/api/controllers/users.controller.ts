@@ -8,6 +8,7 @@ import {
   DefaultValuePipe,
   Delete,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -64,7 +65,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Get()
-  @Permissions('users.user.read')
+  @Permissions('users.user.list')
   async list(
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
     @Query('take', new DefaultValuePipe(20), ParseIntPipe) take: number,
@@ -89,11 +90,28 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard(), PermissionsGuard)
+  @Get(':id')
+  @Permissions('users.user.read')
+  async findById(@Param('id') id: number) {
+    return await getConnection().transaction(async (manager) => {
+      try {
+        return await this.usersService.findBy(manager, { id });
+      } catch (error) {
+        throw new NotFoundException(error.message);
+      }
+    });
+  }
+
+  @UseGuards(AuthGuard(), PermissionsGuard)
   @Put(':id')
   @Permissions('users.user.update')
   async updateRequest(@Param('id') id: number, @Body(new NoEmptyPayloadPipe()) payload: UpdateUserPublicDto) {
     return await getConnection().transaction(async (manager) => {
-      return await this.userService.updateUser(manager, id, payload);
+      try {
+        return await this.userService.updateUser(manager, id, payload);
+      } catch (error) {
+        throw new UnprocessableEntityException(error.message);
+      }
     });
   }
 
@@ -102,7 +120,11 @@ export class UsersController {
   @Permissions('users.user.delete')
   async delete(@Param('id') id: number) {
     return await getConnection().transaction(async (manager) => {
-      return await this.usersService.delete(manager, id);
+      try {
+        return await this.usersService.delete(manager, id);
+      } catch (error) {
+        throw new UnprocessableEntityException(error.message);
+      }
     });
   }
 }

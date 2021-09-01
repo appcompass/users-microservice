@@ -11,21 +11,27 @@ export const roles = [
         system: true
       },
       {
+        name: 'users.user.list',
+        label: 'List Users',
+        description: 'Allows viewing of users',
+        system: true
+      },
+      {
         name: 'users.user.read',
         label: 'Read User',
-        description: 'Allows viewing of users',
+        description: 'Allows viewing of a user',
         system: true
       },
       {
         name: 'users.user.update',
         label: 'Update User',
-        description: 'Allows updates to users',
+        description: 'Allows updates to a user',
         system: true
       },
       {
         name: 'users.user.delete',
         label: 'Delete User',
-        description: 'Allows deletion of users',
+        description: 'Allows deletion of a user',
         system: true
       }
     ]
