@@ -3,6 +3,7 @@ export const roles = [
     name: 'users.admin',
     label: 'Users Admin',
     description: 'Platform Users Administrator',
+    system: true,
     permissions: [
       {
         name: 'users.user.create',
