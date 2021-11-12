@@ -23,6 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await getManager().transaction(
       async (manager) => await this.userService.findBy(manager, { id: token.sub })
     );
-    return moment(user.lastLogout).isBefore(tokenIssuedAt) ? token : false;
+    return moment(user.lastLogout).isSameOrBefore(tokenIssuedAt, 'second') ? token : false;
   }
 }
