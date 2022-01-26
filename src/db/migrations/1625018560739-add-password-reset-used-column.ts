@@ -6,8 +6,8 @@ export class addPasswordResetUsedColumn1625018560739 implements MigrationInterfa
   name = 'addPasswordResetUsedColumn1625018560739';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const config = await new ConfigService().setConfigFromVault();
-    const { schema } = config.get('db');
+    const config = new ConfigService();
+    const { schema } = config.get('DB_CONFIG');
     await queryRunner.query(`
         ALTER TABLE "${schema}"."password_resets"
         ADD "used" boolean NOT NULL DEFAULT false
@@ -19,8 +19,8 @@ export class addPasswordResetUsedColumn1625018560739 implements MigrationInterfa
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const config = await new ConfigService().setConfigFromVault();
-    const { schema } = config.get('db');
+    const config = new ConfigService();
+    const { schema } = config.get('DB_CONFIG');
     await queryRunner.query(`
         ALTER TABLE "${schema}"."password_resets"
         DROP COLUMN "updated_at"

@@ -4,8 +4,8 @@ import { ConfigService } from '../../config/config.service';
 
 export class addUserLoginEntryLog1578359230572 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const config = await new ConfigService().setConfigFromVault();
-    const { schema } = config.get('db');
+    const config = new ConfigService();
+    const { schema } = config.get('DB_CONFIG');
     await queryRunner.query(
       `
       CREATE OR REPLACE FUNCTION ${schema}.adds_user_login_entry() RETURNS TRIGGER AS
@@ -29,8 +29,8 @@ export class addUserLoginEntryLog1578359230572 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const config = await new ConfigService().setConfigFromVault();
-    const { schema } = config.get('db');
+    const config = new ConfigService();
+    const { schema } = config.get('DB_CONFIG');
     await queryRunner.query(`DROP FUNCTION ${schema}.adds_user_login_entry() CASCADE`);
   }
 }

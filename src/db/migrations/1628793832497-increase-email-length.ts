@@ -6,8 +6,8 @@ export class increaseEmailLength1628793832497 implements MigrationInterface {
   name = 'increaseEmailLength1628793832497';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const config = await new ConfigService().setConfigFromVault();
-    const { schema } = config.get('db');
+    const config = new ConfigService();
+    const { schema } = config.get('DB_CONFIG');
 
     await queryRunner.query(`
       ALTER TABLE "${schema}"."users"
@@ -21,8 +21,8 @@ export class increaseEmailLength1628793832497 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const config = await new ConfigService().setConfigFromVault();
-    const { schema } = config.get('db');
+    const config = new ConfigService();
+    const { schema } = config.get('DB_CONFIG');
 
     await queryRunner.query(`
       ALTER TABLE "${schema}"."users"

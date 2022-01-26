@@ -4,8 +4,8 @@ import { ConfigService } from '../../config/config.service';
 
 export class initialSetup1578359230572 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const config = await new ConfigService().setConfigFromVault();
-    const { schema } = config.get('db');
+    const config = new ConfigService();
+    const { schema } = config.get('DB_CONFIG');
     await queryRunner.query(
       `CREATE TABLE "${schema}"."user_logins" ("id" SERIAL NOT NULL, "login_at" TIMESTAMP NOT NULL DEFAULT now(), "user_id" integer, CONSTRAINT "users_user_logins_id_pkey" PRIMARY KEY ("id"))`
     );
@@ -24,8 +24,8 @@ export class initialSetup1578359230572 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const config = await new ConfigService().setConfigFromVault();
-    const { schema } = config.get('db');
+    const config = new ConfigService();
+    const { schema } = config.get('DB_CONFIG');
     await queryRunner.query(
       `ALTER TABLE "${schema}"."password_resets" DROP CONSTRAINT "users_password_resets_user_id_foreign"`
     );
