@@ -20,6 +20,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   rules: {
+    indent: ['error', 2, { ignoredNodes: ['PropertyDefinition'] }],
     'linebreak-style': ['error', 'unix'],
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
