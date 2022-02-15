@@ -50,7 +50,7 @@ export class User {
   @Column({
     type: 'timestamp',
     nullable: false,
-    default: 'now()',
+    default: () => 'now()',
     transformer: new DateTransformer()
   })
   lastLogout: Moment;
